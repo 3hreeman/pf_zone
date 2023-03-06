@@ -19,8 +19,6 @@ public class SimpleCameraController : MonoBehaviour {
         private Vector2 m_input = default(Vector2);
         private Vector2 m_velocity = default(Vector2);
         
-        private float impulsePower = 0.25f;
-
         private void Awake() {
             var camHalfHeight = m_mainCam.orthographicSize;
             var halfWidth = camHalfHeight * m_mainCam.aspect;

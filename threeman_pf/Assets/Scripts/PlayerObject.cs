@@ -1,8 +1,4 @@
-﻿
-
-using System;
-using UnityEngine;
-using UnityEngine.Pool;
+﻿using UnityEngine;
 
 public class PlayerObject : MonoBehaviour {
     public Camera mainCam;
@@ -17,18 +13,20 @@ public class PlayerObject : MonoBehaviour {
     private float m_nextDashTime = 0;
 
     private Vector3 dirVector;
-
+    public Vector2 aimVector;
+    
     [SerializeField] private WeaponObject weapon;
     [SerializeField] private CharacterView charView;
 
     private void Start() {
         m_charController = GetComponent<CharacterController>();
-        weapon.Init();
+        weapon.Init(this);
     }
 
     public void Update() {
         UpdateInput();
         UpdateMove();
+        UpdateAim();
     }
 
     private bool CheckDashAvailable() {
@@ -57,15 +55,19 @@ public class PlayerObject : MonoBehaviour {
     private void DoAttack() {
         var end = mainCam.ScreenToWorldPoint(Input.mousePosition);
         end.z = 0;
-        weapon.DoFire(transform.position, end);
+        weapon.DoFire(end);
     }
 
-    public void UpdateMove() {
+    private void UpdateMove() {
         var moveSpd = MOVE_SPD;
         if (m_leftDashTime > Time.time) {
             moveSpd *= 3;
         }
         
         m_charController.Move(dirVector * (moveSpd * Time.deltaTime));
+    }
+
+    private void UpdateAim() {
+        aimVector = (mainCam.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized;
     }
 }

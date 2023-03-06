@@ -30,8 +30,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 2438418143198291891}
   - {fileID: 6456971075631024118}
+  - {fileID: 2438418143198291891}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCam: {fileID: 0}
+  aimVector: {x: 0, y: 0, z: 0}
   weapon: {fileID: 2959880498537038507}
   charView: {fileID: 4662514625880748825}
 --- !u!143 &6456971077175652078
@@ -81,7 +82,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5227463300341749843, guid: 2c456dc5390b7f74c9281ffdb379b62c, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5227463300341749843, guid: 2c456dc5390b7f74c9281ffdb379b62c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -154,7 +155,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6426750697289401836, guid: 36722711c3933ac40b1457c31272b5b7, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6426750697289401836, guid: 36722711c3933ac40b1457c31272b5b7, type: 3}
       propertyPath: m_LocalPosition.x
