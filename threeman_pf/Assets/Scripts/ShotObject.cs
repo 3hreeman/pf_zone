@@ -22,22 +22,20 @@ public class ShotObject : MonoBehaviour {
     private Vector3 dir;
     private float moveSpd = 10;
     
-    private Action endCallback = null;
-
     private static GameObject playerObj;
     private float lifeTime;
-    public void ShotStart(Vector3 start, Vector3 end, Action callback = null) {
+    
+    private int shotDmg = 0;
+    
+    public void ShotStart(Vector3 start, Vector3 end, int dmg) {
         transform.position = start;
         dir = (end - start).normalized;
         dir.z = 0;
-        endCallback = callback;
         lifeTime = 0;
+        shotDmg = dmg;
     }
     
     private void ShotEnd() {
-        if (endCallback != null) {
-            endCallback();
-        }
         gameObject.SetActive(false);
         ReleaseObject();
     }
@@ -49,5 +47,13 @@ public class ShotObject : MonoBehaviour {
         }
         transform.Translate(dir * (Time.deltaTime * moveSpd));
         shot_transform.right = dir;
+    }
+    
+    private void OnTriggerEnter2D(Collider2D col) {
+        if (col.gameObject.CompareTag("EnemyUnit")) {
+            var enemy = col.gameObject.GetComponent<PlayerUnit>();
+            enemy.TakeDmg(shotDmg);
+            ShotEnd();
+        }
     }
 }

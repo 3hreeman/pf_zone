@@ -9,19 +9,19 @@ public class WeaponObject : MonoBehaviour {
     private IObjectPool<ShotObject> _objPool;
 
     private bool isInit = false;
-    private PlayerObject playerObj;
-    
+    private UnitBase unitObj;
     public Vector2 aimPos;
-    public void Init(PlayerObject player) {
-        playerObj = player;
+    
+    public void Init(UnitBase player) {
+        unitObj = player;
         _objPool = new ObjectPool<ShotObject>(CreateShot, OnGetShot, OnReleaseShot, OnDestroyShot, maxSize:20);
         isInit = true;
     }
 
     public void Update() {
         if(isInit == false) return;
-        aimPos = playerObj.aimVector;
-        var playerPos = playerObj.transform.position;
+        aimPos = unitObj.aimVector;
+        var playerPos = unitObj.transform.position;
         aimPos.x += playerPos.x;
         aimPos.y += playerPos.y;
         aimObject.position = aimPos;
@@ -29,7 +29,7 @@ public class WeaponObject : MonoBehaviour {
     
     public void DoFire(Vector3 end) {
         var shot = _objPool.Get();
-        shot.ShotStart(aimPos, end);
+        shot.ShotStart(aimPos, end, 1);
     }
 
     private ShotObject CreateShot() {
