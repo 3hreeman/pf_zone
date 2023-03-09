@@ -24,7 +24,8 @@ public class ShotObject : MonoBehaviour {
     
     private static GameObject playerObj;
     private float lifeTime;
-    
+
+    private bool isAlive = false;
     private int shotDmg = 0;
     
     public void ShotStart(Vector3 start, Vector3 end, int dmg) {
@@ -33,14 +34,18 @@ public class ShotObject : MonoBehaviour {
         dir.z = 0;
         lifeTime = 0;
         shotDmg = dmg;
+        isAlive = true;
     }
     
     private void ShotEnd() {
+        isAlive = false;
         gameObject.SetActive(false);
         ReleaseObject();
     }
 
     void Update() {
+        if(isAlive == false) return;
+        
         lifeTime += Time.deltaTime;
         if(lifeTime > 2f) {
             ShotEnd();
@@ -50,6 +55,8 @@ public class ShotObject : MonoBehaviour {
     }
     
     private void OnTriggerEnter2D(Collider2D col) {
+        if (!isAlive) return;
+        
         if (col.gameObject.CompareTag("EnemyUnit")) {
             var enemy = col.gameObject.GetComponent<PlayerUnit>();
             enemy.TakeDmg(shotDmg);
