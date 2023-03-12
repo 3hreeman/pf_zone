@@ -29,7 +29,7 @@ public class WeaponObject : MonoBehaviour {
     
     public void DoFire(Vector3 end) {
         var shot = _objPool.Get();
-        shot.ShotStart(aimPos, end, 1);
+        shot.ShotStart(aimPos, end, 1, 1);
     }
 
     private ShotObject CreateShot() {

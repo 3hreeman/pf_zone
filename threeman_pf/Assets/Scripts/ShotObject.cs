@@ -27,13 +27,14 @@ public class ShotObject : MonoBehaviour {
 
     private bool isAlive = false;
     private int shotDmg = 0;
-    
-    public void ShotStart(Vector3 start, Vector3 end, int dmg) {
+    private int shotLife = 0;
+    public void ShotStart(Vector3 start, Vector3 end, int dmg, int life) {
         transform.position = start;
         dir = (end - start).normalized;
         dir.z = 0;
         lifeTime = 0;
         shotDmg = dmg;
+        shotLife = life;
         isAlive = true;
     }
     
@@ -57,10 +58,13 @@ public class ShotObject : MonoBehaviour {
     private void OnTriggerEnter2D(Collider2D col) {
         if (!isAlive) return;
         
-        if (col.gameObject.CompareTag("EnemyUnit")) {
-            var enemy = col.gameObject.GetComponent<PlayerUnit>();
-            enemy.TakeDmg(shotDmg);
-            ShotEnd();
+        if(shotLife > 0) {
+            shotLife--;
+            if (col.gameObject.CompareTag("EnemyUnit")) {
+                var enemy = col.gameObject.GetComponent<EnemyUnit>();
+                enemy.TakeDmg(shotDmg);
+                ShotEnd();
+            }
         }
     }
 }

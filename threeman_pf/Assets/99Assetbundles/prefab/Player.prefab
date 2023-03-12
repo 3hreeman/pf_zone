@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 4437542601741969409}
   m_Layer: 0
   m_Name: Player
-  m_TagString: EnemyUnit
+  m_TagString: PlayerUnit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -132,8 +132,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b59aaaf82f394fa3ae3e06b055e34126, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dirVector: {x: 0, y: 0, z: 0}
-  aimVector: {x: 0, y: 0}
   weapon: {fileID: 2959880498537038507}
   charView: {fileID: 4662514625880748825}
 --- !u!50 &5772888094579119380

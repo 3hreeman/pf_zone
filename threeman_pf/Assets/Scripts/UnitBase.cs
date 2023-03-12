@@ -7,22 +7,24 @@ public class UnitBase : MonoBehaviour {
     protected int maxHp = 100;
     protected int curHp = 100;
 
+    public bool isAlive = false;
+
     public Vector3 dirVector { get; protected set; }
     public Vector2 aimVector { get; protected set; }
 
     protected virtual void DoMove() { }
     public virtual void DoAttack(Vector3 end) { }
 
-    protected void DoRespawn() {
-        transform.position = Vector3.zero;
-        curHp = maxHp;
+    protected virtual void DoDie() {
+        isAlive = false;
     }
-    
-    
-    public void TakeDmg(int dmg) {
+
+    public virtual void TakeDmg(int dmg) {
+        if(isAlive == false) return;
+        
         curHp -= dmg;
         if (curHp <= 0) {
-            DoRespawn();
+            DoDie();
         }
         
         var pos = transform.position;

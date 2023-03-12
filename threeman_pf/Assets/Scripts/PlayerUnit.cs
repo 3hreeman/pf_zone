@@ -10,7 +10,7 @@ public class PlayerUnit : UnitBase {
 
     [SerializeField] private WeaponObject weapon;
     [SerializeField] private CharacterView charView;
-    
+
     private void Start() {
         weapon.Init(this);
         curHp = maxHp;

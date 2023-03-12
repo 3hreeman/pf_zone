@@ -51,9 +51,6 @@ public class CombatDmgFontObject : MonoBehaviour {
         gameObject.SetActive(false);
     }
 
-    static void LoadDmgObjCallback(object a, object b) {
-        
-    }
     public static void PrintDmgFont(Vector3 pos, string data, DmgTxtType type, int order_idx) {
         //return;
         CombatDmgFontObject combatDmgFont = null;
