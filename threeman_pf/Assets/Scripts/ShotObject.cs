@@ -28,13 +28,18 @@ public class ShotObject : MonoBehaviour {
     private bool isAlive = false;
     private int shotDmg = 0;
     private int shotLife = 0;
-    public void ShotStart(Vector3 start, Vector3 end, int dmg, int life) {
+    private int curLife = 0;
+    private UnitBase.UnitType ownerType;
+    
+    public void ShotStart(UnitBase unit, Vector3 start, Vector3 end, float chargingPower) {
         transform.position = start;
         dir = (end - start).normalized;
         dir.z = 0;
         lifeTime = 0;
-        shotDmg = dmg;
-        shotLife = life;
+        shotDmg = Mathf.FloorToInt(chargingPower);
+        curLife = shotLife = shotDmg;
+        transform.localScale = Vector3.one * shotLife;
+        ownerType = unit.unitType;
         isAlive = true;
     }
     
@@ -55,14 +60,26 @@ public class ShotObject : MonoBehaviour {
         shot_transform.right = dir;
     }
     
-    private void OnTriggerEnter2D(Collider2D col) {
+    private void OnTriggerStay2D(Collider2D col) {
         if (!isAlive) return;
         
-        if(shotLife > 0) {
-            shotLife--;
-            if (col.gameObject.CompareTag("EnemyUnit")) {
-                var enemy = col.gameObject.GetComponent<EnemyUnit>();
-                enemy.TakeDmg(shotDmg);
+        if(curLife > 0) {
+            if (ownerType == UnitBase.UnitType.Player) {
+                if (col.gameObject.CompareTag("EnemyUnit")) {
+                    var enemy = col.gameObject.GetComponent<EnemyUnit>();
+                    enemy.TakeDmg(shotDmg);
+                    curLife--;
+                }
+            }
+            else if (ownerType == UnitBase.UnitType.Enemy) {
+                if (col.gameObject.CompareTag("PlayerUnit")) {
+                    var player = col.gameObject.GetComponent<PlayerUnit>();
+                    player.TakeDmg(shotDmg);
+                    curLife--;
+                }
+            }
+            
+            if(curLife <= 0) {
                 ShotEnd();
             }
         }

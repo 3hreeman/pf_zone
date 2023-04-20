@@ -48,6 +48,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7151b12c6eb9bf34c8f0c4d5c3e8f795, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isAlive: 0
+  unitType: 1
   weapon: {fileID: 8247542531093294289}
   charView: {fileID: 2004708510876212579}
 --- !u!50 &827493272513264494

@@ -27,9 +27,9 @@ public class WeaponObject : MonoBehaviour {
         aimObject.position = aimPos;
     }
     
-    public void DoFire(Vector3 end) {
+    public void DoFire(UnitBase unit, Vector3 end, float chargingPower = 1f) {
         var shot = _objPool.Get();
-        shot.ShotStart(aimPos, end, 1, 1);
+        shot.ShotStart(unit, aimPos, end, chargingPower);
     }
 
     private ShotObject CreateShot() {

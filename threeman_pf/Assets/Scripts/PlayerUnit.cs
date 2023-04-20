@@ -4,6 +4,7 @@ public class PlayerUnit : UnitBase {
     private const float MOVE_SPD = 5f;
     private const float DASH_TIME = 0.5f;
     private const float DASH_COOLTIME = 1f;
+    private const float FIRE_COOLTIME = 0.25f;
 
     private float m_leftDashTime = 0;
     private float m_nextDashTime = 0;
@@ -11,9 +12,13 @@ public class PlayerUnit : UnitBase {
     [SerializeField] private WeaponObject weapon;
     [SerializeField] private CharacterView charView;
 
+    private bool isCharging = false;
+    private float chargingPower = 1;
+    private float maxChargingPower = 5f;
     private void Start() {
         weapon.Init(this);
         curHp = maxHp;
+        isAlive = true;
     }
 
     public void Update() {
@@ -23,6 +28,10 @@ public class PlayerUnit : UnitBase {
     private bool CheckDashAvailable() {
         return m_nextDashTime < Time.time;
     }
+
+    public void UpdateCooltime() {
+        
+    }
     
     public void UpdateAim(Vector3 mousePos) {
         aimVector = (mousePos - transform.position).normalized;
@@ -30,6 +39,20 @@ public class PlayerUnit : UnitBase {
 
     public void UpdateDir(Vector3 dir) {
         dirVector = dir;
+    }
+
+    public void SetCharging(bool flag) {
+        isCharging = flag;
+        chargingPower = 1f;
+    }
+
+    public void UpdateCharging() {
+        if (isCharging) {
+            chargingPower += Time.deltaTime;
+            if (chargingPower > maxChargingPower) {
+                chargingPower = maxChargingPower;
+            }
+        }
     }
     
     public void DoRolling() {
@@ -42,7 +65,15 @@ public class PlayerUnit : UnitBase {
     }
     
     public override void DoAttack(Vector3 end) {
-        weapon.DoFire(end);
+        if (isCharging) {
+            weapon.DoFire(this, end, chargingPower * 3f);
+            SetCharging(false);
+            return;
+        } 
+        if (nextAttackTime > Time.time) return;
+        
+        nextAttackTime = Time.time + FIRE_COOLTIME;
+        weapon.DoFire(this, end);
     }
 
     protected override void DoMove() {

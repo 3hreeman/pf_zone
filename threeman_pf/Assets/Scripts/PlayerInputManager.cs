@@ -9,7 +9,7 @@ public class PlayerInputManager : MonoBehaviour {
     public CombatDmgFontObject m_dmgFontPrefab;
     
     DmgFontPool m_dmgFontPool;
-
+    
     private void Start() {
         m_dmgFontPool = new DmgFontPool(m_dmgFontPrefab.gameObject);
     }
@@ -25,6 +25,8 @@ public class PlayerInputManager : MonoBehaviour {
 
         var dirVector = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
         m_player.UpdateDir(dirVector);
+
+        m_player.UpdateCharging();
     }
     
     public void UpdateInput() {
@@ -37,12 +39,14 @@ public class PlayerInputManager : MonoBehaviour {
             m_player.DoAttack(mousePos);
         }
 
-        if (Input.GetMouseButton(1)) {
+        if (Input.GetMouseButtonDown(1)) {
+            m_player.SetCharging(true);
+        }
+
+        if (Input.GetMouseButtonUp(1)) {
             var mousePos = m_mainCam.ScreenToWorldPoint(Input.mousePosition);
             mousePos.z = 0;
-            // CombatDmgFontObject.PrintDmgFont(mousePos, "100", CombatDmgFontObject.DmgTxtType.NormalAtk, 0);
-            var font = m_dmgFontPool.Get();
-            font.PrintDmgFont(mousePos, "100", CombatDmgFontObject.DmgTxtType.NormalAtk);
+            m_player.DoAttack(mousePos);
         }
     }
 }
