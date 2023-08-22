@@ -5,8 +5,8 @@ using UnityEngine.Pool;
 using Random = UnityEngine.Random;
 
 public class Main : MonoBehaviour {
-    public float enemyGenTime = 5f;
-
+    [Range(0.1f, 5f)] public float enemyGenTime = 5f;
+    [Range(0.1f, 0.5f)] public float enemyGenTimeDecrease = 0.1f;
     public PlayerUnit player;
     public EnemyUnit enemyPrefab;
 
@@ -31,7 +31,7 @@ public class Main : MonoBehaviour {
 
     private void Update() {
         if (enemyGenTime > 0.1f) {
-            enemyGenTime = (enemyGenTime - Time.deltaTime * 0.1f);
+            enemyGenTime = (enemyGenTime - Time.deltaTime * enemyGenTimeDecrease);
         }
         else {
             enemyGenTime = 0.1f;

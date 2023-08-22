@@ -12,11 +12,11 @@ using System.Threading;
 
 namespace Rito.JobTest
 {
-    public class TerrainGenerator : MonoBehaviour
-    {
+    public class TerrainGenerator : MonoBehaviour {
+        public List<GameObject> goList = new List<GameObject>();
         private enum TestCase
         {
-            Basic, JobSync, JobAsync
+            Basic, Coroutine, JobSync, JobAsync
         }
         [SerializeField] private TestCase _testCase;
 
@@ -29,6 +29,8 @@ namespace Rito.JobTest
 
         [SerializeField] private Material _material;
 
+        public float StartAt;
+        public float EndAt;
         private class MeshData
         {
             public List<Vector3> vertList;
@@ -57,23 +59,28 @@ namespace Rito.JobTest
         {
             //TaskTest();
             //return;
-
-            switch (_testCase)
-            {
-                case TestCase.Basic: TestBasic();
-                    break;
-                case TestCase.JobSync: TestJobSync();
-                    break;
-                case TestCase.JobAsync: StartCoroutine(TestJobAsyncRoutine());
-                    break;
-            }
+            // switch (_testCase)
+            // {
+            //     case TestCase.Basic: TestBasic();
+            //         break;
+            //     case TestCase.JobSync: TestJobSync();
+            //         break;
+            //     case TestCase.JobAsync: TestJobAsync();
+            //         break;
+            // }
         }
 
+        public void ClearObjects() {
+            foreach (var go in goList) {
+                Destroy(go);
+            }
+            goList.Clear();
+        }
         /***********************************************************************
         *                               Test Basic
         ***********************************************************************/
         #region .
-        private void TestBasic()
+        public void TestBasic()
         {
             Vector3 curChunkPos = Vector3.zero;
 
@@ -92,6 +99,9 @@ namespace Rito.JobTest
 
                 curChunkPos.z += _width;
             }
+
+            EndAt = Time.realtimeSinceStartup;
+            Debug.LogWarning("Total Time : " + (EndAt - StartAt) + "s");
         }
 
         private void CalculateMesh(MeshData meshData, in Vector3 startPos)
@@ -154,6 +164,7 @@ namespace Rito.JobTest
 
             mFilter.mesh = mesh;
             mRender.sharedMaterial = _material;
+            goList.Add(go);
         }
 
         #endregion
@@ -161,7 +172,7 @@ namespace Rito.JobTest
         *                               Test Job Sync
         ***********************************************************************/
         #region .
-        private void TestJobSync()
+        public void TestJobSync()
         {
             Vector3 curChunkPos = Vector3.zero;
 
@@ -187,6 +198,8 @@ namespace Rito.JobTest
 
                 curChunkPos.z += _width;
             }
+            EndAt = Time.realtimeSinceStartup;
+            Debug.LogWarning("Total Time : " + (EndAt - StartAt) + "s");
         }
 
         private void GenerateMesh(Vector3[] verts, int[] tris)
@@ -204,6 +217,7 @@ namespace Rito.JobTest
 
             mFilter.mesh = mesh;
             mRender.sharedMaterial = _material;
+            goList.Add(go);
         }
 
         #endregion
@@ -211,6 +225,10 @@ namespace Rito.JobTest
         *                               Test Job Async
         ***********************************************************************/
         #region .
+
+        public void TestJobAsync() {
+            StartCoroutine(TestJobAsyncRoutine());
+        }
         private IEnumerator TestJobAsyncRoutine()
         {
             Vector3 curChunkPos = Vector3.zero;
@@ -242,8 +260,37 @@ namespace Rito.JobTest
 
                 curChunkPos.z += _width;
             }
+            EndAt = Time.realtimeSinceStartup;
+            Debug.LogWarning("Total Time : " + (EndAt - StartAt) + "s");
         }
 
         #endregion
+
+        public void TestCoroutine() {
+            StartCoroutine(JustCoroutine());
+        }
+        private IEnumerator JustCoroutine() {
+            Vector3 curChunkPos = Vector3.zero;
+
+            for (int z = 0; z < _chunkCount; z++)
+            {
+                curChunkPos.x = 0f;
+
+                for (int x = 0; x < _chunkCount; x++)
+                {
+                    MeshData meshData = new MeshData();
+                    CalculateMesh(meshData, curChunkPos);
+                    GenerateMesh(meshData);
+
+                    curChunkPos.x += _width;
+                    yield return null;
+                }
+
+                curChunkPos.z += _width;
+            }
+
+            EndAt = Time.realtimeSinceStartup;
+            Debug.LogWarning("Total Time : " + (EndAt - StartAt) + "s");
+        }
     }
 }
