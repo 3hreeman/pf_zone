@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Pool;
+using Random = UnityEngine.Random;
 
 public class ObjectPoolManager : MonoBehaviour {
     [Serializable]
@@ -17,7 +18,8 @@ public class ObjectPoolManager : MonoBehaviour {
     
     private Dictionary<string, PoolInfo> infoDict;
     public Dictionary<string, IObjectPool<PoolingObject>> poolDict;
-
+    public Transform poolParent;
+    
     private string curKey;
     private void Awake() {
         if (instance == null) {
@@ -42,7 +44,7 @@ public class ObjectPoolManager : MonoBehaviour {
 
     private PoolingObject OnCreateObject() {
         var poolObj = Instantiate(infoDict[curKey].poolObj).GetComponent<PoolingObject>();
-        poolObj.SetPool(poolDict[curKey]);
+        poolObj.SetPool(poolDict[curKey], poolParent);
         return poolObj;
     }
     
@@ -58,22 +60,24 @@ public class ObjectPoolManager : MonoBehaviour {
         return null;
     }
 
-    private void Update() {
+    /*private void Update() {
         TestInputUpdate();
-    }
+    }*/
 
     private void TestInputUpdate() {
-        var key = "fx_bomb";
         if (Input.GetMouseButton(0)) {
-            var poolObj = Get(key);
+            /*var poolObj = Get("fx_bomb");
             var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             pos.z = 0;
-            poolObj.transform.position = pos;
+            poolObj.transform.position = pos;*/
+            var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = 0;
+            CombatDmgFontObject.PrintDmgFont(pos, Random.Range(10000,100000).ToString(), CombatDmgFontObject.DmgTxtType.NormalAtk, 0);
         }else if (Input.GetMouseButton(1)) {
             var pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             pos.z = 0;
-            var obj = Instantiate(infoDict[key].poolObj.gameObject);
-            obj.transform.position = pos;
+            var poolObj = Get("dmg_font") as DmgFontObject;
+            poolObj.PrintDmgFont(pos, Random.Range(10000,100000).ToString(), DmgFontObject.DmgTxtType.Crit);
         }
     }
 }

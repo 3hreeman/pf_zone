@@ -1,20 +1,14 @@
-using System;
 using UnityEngine;
-using UnityEngine.Pool;
 
 public class WeaponObject : MonoBehaviour {
-    [SerializeField] private ShotObject shotObject;
     [SerializeField] private Transform aimObject;
-    
-    private IObjectPool<ShotObject> _objPool;
-
+    [SerializeField] private Sprite shotSpr;
     private bool isInit = false;
     private UnitBase unitObj;
     public Vector2 aimPos;
     
     public void Init(UnitBase player) {
         unitObj = player;
-        _objPool = new ObjectPool<ShotObject>(CreateShot, OnGetShot, OnReleaseShot, OnDestroyShot, maxSize:20);
         isInit = true;
     }
 
@@ -28,25 +22,8 @@ public class WeaponObject : MonoBehaviour {
     }
     
     public void DoFire(UnitBase unit, Vector3 end, float chargingPower = 1f) {
-        var shot = _objPool.Get();
+        var shot = ObjectPoolManager.instance.Get("shot_object") as ShotObject;
+        shot.SetShotSprite(shotSpr);
         shot.ShotStart(unit, aimPos, end, chargingPower);
-    }
-
-    private ShotObject CreateShot() {
-        var shot = Instantiate(shotObject).GetComponent<ShotObject>();
-        shot.SetPool(_objPool);
-        return shot;
-    }
-
-    private void OnGetShot(ShotObject shot) {
-        shot.gameObject.SetActive(true);
-    }
-    
-    private void OnReleaseShot(ShotObject shot) {
-        shot.gameObject.SetActive(false);
-    }
-    
-    private void OnDestroyShot(ShotObject shot) {
-        Destroy(shot.gameObject);
     }
 }

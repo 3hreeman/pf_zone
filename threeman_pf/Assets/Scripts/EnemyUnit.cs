@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.Pool;
 using Random = UnityEngine.Random;
@@ -35,7 +34,7 @@ public class EnemyUnit : UnitBase {
     public void Update() {
         UpdateAim();
         DoMove();
-        CheckAttack();
+        // CheckAttack();
     }
 
     public void InitEnemy(PlayerUnit player) {
@@ -83,6 +82,8 @@ public class EnemyUnit : UnitBase {
     protected override void DoDie() {
         base.DoDie();
         ReleaseObject();
+        var fx = ObjectPoolManager.instance.Get("fx_bomb");
+        fx.transform.position = transform.position;
     }
     
     public override void TakeDmg(int dmg) {

@@ -285,7 +285,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.5
+      scalar: 1
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -4879,7 +4879,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5244034099931441131}
-  - component: {fileID: 8223385293108274131}
+  - component: {fileID: -3604754921232077606}
   m_Layer: 0
   m_Name: fx_simple_bomb
   m_TagString: Untagged
@@ -4903,7 +4903,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8223385293108274131
+--- !u!114 &-3604754921232077606
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4912,7 +4912,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3085391653956053042}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ad0caf53ddf42d54eac172733fc58ecc, type: 3}
+  m_Script: {fileID: 11500000, guid: 2ce47642747271647acd97377754a680, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  releaseAt: 18.989397
+  releaseAt: 0

@@ -1,21 +1,6 @@
-﻿using System;
-using System.Collections;
-using UnityEngine;
-using UnityEngine.Pool;
+﻿using UnityEngine;
 
-public class ShotObject : MonoBehaviour {
-#region pooling code
-    private IObjectPool<ShotObject> _objPool;
-    
-    public void SetPool(IObjectPool<ShotObject> pool) {
-        _objPool = pool;
-    }
-    
-    public void ReleaseObject() {
-        _objPool.Release(this);
-    }
-#endregion
-
+public class ShotObject : PoolingObject {
     [SerializeField]
     private Transform shot_transform;
     
@@ -30,6 +15,11 @@ public class ShotObject : MonoBehaviour {
     private int shotLife = 0;
     private int curLife = 0;
     private UnitBase.UnitType ownerType;
+
+    public SpriteRenderer sprRenderer;
+    public void SetShotSprite(Sprite spr) {
+        sprRenderer.sprite = spr;
+    }
     
     public void ShotStart(UnitBase unit, Vector3 start, Vector3 end, float chargingPower) {
         transform.position = start;

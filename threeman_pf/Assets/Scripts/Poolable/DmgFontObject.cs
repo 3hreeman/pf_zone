@@ -1,13 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Pool;
 
-public class CombatDmgFontObject : MonoBehaviour {
-    public static GameObject DmgFontPrefab = null;
-    static Stack<CombatDmgFontObject> entryStack = new Stack<CombatDmgFontObject>();
-    static List<CombatDmgFontObject> usingList = new List<CombatDmgFontObject>();
-
+public class DmgFontObject : PoolingObject {
     public TextMeshPro txtDmgFont;
     public Animator anim;
 
@@ -48,49 +43,6 @@ public class CombatDmgFontObject : MonoBehaviour {
         txtDmgFont.text = "NOT_SETTED";
         gameObject.SetActive(false);
     }
-
-    public static void PrintDmgFont(Vector3 pos, string data, DmgTxtType type, int order_idx) {
-        //return;
-        CombatDmgFontObject combatDmgFont = null;
-        if(entryStack.Count == 0) {
-            if (DmgFontPrefab == null) {
-                DmgFontPrefab = Resources.Load<GameObject>("Combat/CombatDmgTextPrefab");
-            }
-            combatDmgFont = Instantiate(DmgFontPrefab).GetComponent<CombatDmgFontObject>();
-            // SimpleInstantEffManager.AttachToEffectLayer(dmg_font.gameObject);
-        }
-        else {
-            combatDmgFont = entryStack.Pop();
-        }
-        combatDmgFont.transform.position = pos;
-        combatDmgFont.txtDmgFont.text = data;
-        usingList.Add(combatDmgFont);
-
-        combatDmgFont.gameObject.SetActive(true);
-
-        var colorDict = playerFont;
-
-        TextColorInfo info = colorDict[type];
-        combatDmgFont.txtDmgFont.colorGradient = new VertexGradient(info.fontStartColor, info.fontStartColor, info.fontEndColor, info.fontEndColor);
-        combatDmgFont.txtDmgFont.outlineColor = info.outlineColor;
-
-        combatDmgFont.txtDmgFont.sortingOrder = order_idx;
-        if (type == DmgTxtType.Crit || type == DmgTxtType.SkillCrit) {
-            combatDmgFont.anim.SetTrigger("critical");
-        }
-        else if (type == DmgTxtType.Bomb) {
-            combatDmgFont.anim.SetTrigger("bomb");    
-        }
-        else if (type == DmgTxtType.Heal) {
-            combatDmgFont.anim.SetTrigger("heal");
-        }
-        else if (type == DmgTxtType.Miss) {
-            combatDmgFont.anim.SetTrigger("normal");
-        }
-        else {
-            combatDmgFont.anim.SetTrigger("normal");
-        }
-    }
     
     public void PrintDmgFont(Vector3 pos, string data, DmgTxtType type) {
         transform.position = pos;
@@ -121,22 +73,6 @@ public class CombatDmgFontObject : MonoBehaviour {
     }
 
     public void OnAnimationEnd() {
-        if (usingPool) {
-            _objPool.Release(this);
-        }
-        else {
-            usingList.Remove(this);
-            entryStack.Push(this);
-            gameObject.SetActive(false);
-        }
-    }
-
-    public IObjectPool<CombatDmgFontObject> _objPool;
-
-    private bool usingPool = false;
-    public void SetPool(IObjectPool<CombatDmgFontObject> pool) {
-        usingPool = true;
-        _objPool = pool;
+        _objPool.Release(this);
     }
 }
-
