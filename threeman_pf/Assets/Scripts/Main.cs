@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Pool;
@@ -20,9 +19,10 @@ public class Main : MonoBehaviour {
     
     IEnumerator DoEnemyGen() {
         while (true) {
+            var pos = player.transform.position;
             var enemy = enemyPool.Get();
-            float x = player.transform.position.x + Random.Range(-5.0f, 5.0f);
-            float y = player.transform.position.y + Random.Range(-5.0f, 5.0f);
+            float x = pos.x + Random.Range(-5.0f, 5.0f);
+            float y = pos.y + Random.Range(-5.0f, 5.0f);
             enemy.transform.position = new Vector3(x,y, 0);
             enemy.InitEnemy(player);
             yield return new WaitForSeconds(enemyGenTime);

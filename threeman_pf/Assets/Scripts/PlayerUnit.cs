@@ -30,10 +30,6 @@ public class PlayerUnit : UnitBase {
         return m_nextDashTime < Time.time;
     }
 
-    public void UpdateCooltime() {
-        
-    }
-    
     public void UpdateAim(Vector3 mousePos) {
         aimVector = (mousePos - transform.position).normalized;
     }
