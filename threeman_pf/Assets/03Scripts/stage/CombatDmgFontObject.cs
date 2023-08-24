@@ -121,22 +121,9 @@ public class CombatDmgFontObject : MonoBehaviour {
     }
 
     public void OnAnimationEnd() {
-        if (usingPool) {
-            _objPool.Release(this);
-        }
-        else {
-            usingList.Remove(this);
-            entryStack.Push(this);
-            gameObject.SetActive(false);
-        }
-    }
-
-    public IObjectPool<CombatDmgFontObject> _objPool;
-
-    private bool usingPool = false;
-    public void SetPool(IObjectPool<CombatDmgFontObject> pool) {
-        usingPool = true;
-        _objPool = pool;
+        usingList.Remove(this);
+        entryStack.Push(this);
+        gameObject.SetActive(false);
     }
 }
 
