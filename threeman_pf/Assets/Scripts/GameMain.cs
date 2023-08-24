@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Pool;
 using Random = UnityEngine.Random;
 
-public class Main : MonoBehaviour {
+public class GameMain : MonoBehaviour {
     [Range(0.1f, 5f)] public float enemyGenTime = 5f;
     [Range(0.1f, 0.5f)] public float enemyGenTimeDecrease = 0.1f;
     public PlayerUnit player;
