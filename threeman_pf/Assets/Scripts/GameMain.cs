@@ -1,4 +1,7 @@
+using System;
 using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
 using Random = UnityEngine.Random;
@@ -11,10 +14,39 @@ public class GameMain : MonoBehaviour {
 
     private IObjectPool<EnemyUnit> enemyPool;
 
+    private CancellationTokenSource cts = new();
+    
     private void Start() {
         enemyPool = new ObjectPool<EnemyUnit>(CreateEnemy, OnGetEnemy, OnReleaseEnemy, OnDestroyEnemy, maxSize: 20);
         enemyGenTime = 5;
         StartCoroutine(DoEnemyGen());
+    }
+
+    private async UniTaskVoid TestTask1(CancellationToken token) {
+        //token.Cancel이 불릴 경우 TestTask1이 중단된다
+        
+        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
+        Debug.LogWarning("1 sec passed");
+        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
+        Debug.LogWarning("2 sec passed");
+        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
+        Debug.LogWarning("3 sec passed");
+        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
+        Debug.LogWarning("4 sec passed");
+        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
+        Debug.LogWarning("5 sec passed");
+    }
+
+    private async UniTaskVoid TaskEnemyGen(CancellationToken token) {
+        while (true) {
+            var pos = player.transform.position;
+            var enemy = enemyPool.Get();
+            float x = pos.x + Random.Range(-5.0f, 5.0f);
+            float y = pos.y + Random.Range(-5.0f, 5.0f);
+            enemy.transform.position = new Vector3(x,y, 0);
+            enemy.InitEnemy(player);
+            await UniTask.Delay(TimeSpan.FromSeconds(enemyGenTime), cancellationToken: token);  //token.Cancel()이 호출되면 
+        }
     }
     
     IEnumerator DoEnemyGen() {
@@ -35,6 +67,11 @@ public class GameMain : MonoBehaviour {
         }
         else {
             enemyGenTime = 0.1f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            Debug.LogWarning("Stop Enemy Generate");
+            cts.Cancel();
         }
     }
 
