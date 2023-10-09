@@ -5,7 +5,8 @@ public class PlayerUnit : UnitBase {
     private const float DASH_TIME = 0.5f;
     private const float DASH_COOLTIME = 1f;
     private const float FIRE_COOLTIME = 0.25f;
-
+    [Range(1f, 10f)] public float AtkSpdRatio = 1f;
+    [Range(1f, 10f)] public float AtkPowerRatio = 1f;
     private float m_leftDashTime = 0;
     private float m_nextDashTime = 0;
 
@@ -29,10 +30,6 @@ public class PlayerUnit : UnitBase {
         return m_nextDashTime < Time.time;
     }
 
-    public void UpdateCooltime() {
-        
-    }
-    
     public void UpdateAim(Vector3 mousePos) {
         aimVector = (mousePos - transform.position).normalized;
     }
@@ -66,14 +63,14 @@ public class PlayerUnit : UnitBase {
     
     public override void DoAttack(Vector3 end) {
         if (isCharging) {
-            weapon.DoFire(this, end, chargingPower * 3f);
+            weapon.DoFire(this, end, chargingPower * 3f * AtkPowerRatio);
             SetCharging(false);
             return;
         } 
         if (nextAttackTime > Time.time) return;
         
-        nextAttackTime = Time.time + FIRE_COOLTIME;
-        weapon.DoFire(this, end);
+        nextAttackTime = Time.time + (FIRE_COOLTIME / AtkSpdRatio);
+        weapon.DoFire(this, end, AtkPowerRatio);
     }
 
     protected override void DoMove() {

@@ -5,8 +5,13 @@ using UnityEngine;
 public class DmgFontSubObject : MonoBehaviour
 {
     public CombatDmgFontObject dmgFont;
-
+    public DmgFontObject dmgFontObj;
     public void OnAnimationEnd() {
-        dmgFont.OnAnimationEnd();
+        if (dmgFont != null) {
+            dmgFont.OnAnimationEnd();
+        }
+        else if (dmgFontObj != null) {
+            dmgFontObj.OnAnimationEnd();
+        }
     }
 }

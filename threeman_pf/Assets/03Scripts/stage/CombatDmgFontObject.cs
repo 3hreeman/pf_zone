@@ -5,7 +5,7 @@ using UnityEngine.Pool;
 
 public class CombatDmgFontObject : MonoBehaviour {
     public static GameObject DmgFontPrefab = null;
-    static Queue<CombatDmgFontObject> entryQueue = new Queue<CombatDmgFontObject>();
+    static Stack<CombatDmgFontObject> entryStack = new Stack<CombatDmgFontObject>();
     static List<CombatDmgFontObject> usingList = new List<CombatDmgFontObject>();
 
     public TextMeshPro txtDmgFont;
@@ -52,7 +52,7 @@ public class CombatDmgFontObject : MonoBehaviour {
     public static void PrintDmgFont(Vector3 pos, string data, DmgTxtType type, int order_idx) {
         //return;
         CombatDmgFontObject combatDmgFont = null;
-        if(entryQueue.Count == 0) {
+        if(entryStack.Count == 0) {
             if (DmgFontPrefab == null) {
                 DmgFontPrefab = Resources.Load<GameObject>("Combat/CombatDmgTextPrefab");
             }
@@ -60,7 +60,7 @@ public class CombatDmgFontObject : MonoBehaviour {
             // SimpleInstantEffManager.AttachToEffectLayer(dmg_font.gameObject);
         }
         else {
-            combatDmgFont = entryQueue.Dequeue();
+            combatDmgFont = entryStack.Pop();
         }
         combatDmgFont.transform.position = pos;
         combatDmgFont.txtDmgFont.text = data;
@@ -121,22 +121,9 @@ public class CombatDmgFontObject : MonoBehaviour {
     }
 
     public void OnAnimationEnd() {
-        if (usingPool) {
-            _objPool.Release(this);
-        }
-        else {
-            usingList.Remove(this);
-            entryQueue.Enqueue(this);
-            gameObject.SetActive(false);
-        }
-    }
-
-    public IObjectPool<CombatDmgFontObject> _objPool;
-
-    private bool usingPool = false;
-    public void SetPool(IObjectPool<CombatDmgFontObject> pool) {
-        usingPool = true;
-        _objPool = pool;
+        usingList.Remove(this);
+        entryStack.Push(this);
+        gameObject.SetActive(false);
     }
 }
 
