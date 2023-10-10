@@ -121,17 +121,17 @@ public class PuzzleMain : MonoBehaviour
         {
             // Horizontal swipe
             if (direction.x > 0)
-                targetTile = GetAdjacentTile(selectedTile, new Tuple<int, int>(0, 1));
+                targetTile = GetAdjacentTile(selectedTile, Vector2Int.up);
             else
-                targetTile = GetAdjacentTile(selectedTile, new Tuple<int, int>(0, -1));
+                targetTile = GetAdjacentTile(selectedTile, Vector2Int.down);
         }
         else
         {
             // Vertical swipe
             if (direction.y > 0)
-                targetTile = GetAdjacentTile(selectedTile, new Tuple<int, int>(1, 0));
+                targetTile = GetAdjacentTile(selectedTile, Vector2Int.right);
             else
-                targetTile = GetAdjacentTile(selectedTile, new Tuple<int, int>(-1, 0));
+                targetTile = GetAdjacentTile(selectedTile, Vector2Int.left);
         }
 
         if (targetTile != null)
@@ -163,10 +163,10 @@ public class PuzzleMain : MonoBehaviour
         tile1.SwapTile(tile2);
     }
     
-    TileObject GetAdjacentTile(TileObject tile, Tuple<int, int> dir)
+    TileObject GetAdjacentTile(TileObject tile, Vector2Int dir)
     {
-        var targetX = tile.xIndex + dir.Item1;
-        var targetY = tile.yIndex + dir.Item2;
+        var targetX = tile.xIndex + dir.x;
+        var targetY = tile.yIndex + dir.y;
         if (targetX >= 0 && targetX < Columns && targetY >= 0 && targetY < Rows)
         {
             return tiles[targetX, targetY];
