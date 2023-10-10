@@ -4,10 +4,20 @@ public class TileObject : MonoBehaviour
 {
     public bool isSelected { get; private set; } = false;
     private SpriteRenderer spriteRenderer;
-
+    public int xIndex;
+    public int yIndex;
+    public int tileType;
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void Init(int x, int y, int type, Sprite spr)
+    {
+        xIndex = x;
+        yIndex = y;
+        tileType = type;
+        spriteRenderer.sprite = spr;
     }
 
     public void SelectTile()
@@ -21,5 +31,16 @@ public class TileObject : MonoBehaviour
     {
         isSelected = false;
         spriteRenderer.color = Color.white;
+    }
+
+    public void SwapTile(TileObject tile)
+    {
+        var orgX = xIndex;
+        var orgY = yIndex;
+        xIndex = tile.xIndex;
+        yIndex = tile.yIndex;
+        tile.xIndex = orgX;
+        tile.yIndex = orgY;
+        
     }
 }

@@ -1,4 +1,7 @@
+using System;
+using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PuzzleMain : MonoBehaviour
 {
@@ -7,7 +10,7 @@ public class PuzzleMain : MonoBehaviour
     private const int Rows = 8;
     private const int Columns = 8;
     private const int MatchLength = 3;
-    private GameObject[,] tiles = new GameObject[Rows, Columns];
+    private TileObject[,] tiles = new TileObject[Rows, Columns];
     public Sprite[] tileSprites;
 
     public Camera mainCam;
@@ -23,8 +26,10 @@ public class PuzzleMain : MonoBehaviour
         {
             for (int j = 0; j < Columns; j++)
             {
-                GameObject tile = Instantiate(tilePrefab, new Vector2(j * TILE_SIZE, i * TILE_SIZE), Quaternion.identity);
-                tile.GetComponent<SpriteRenderer>().sprite = tileSprites[Random.Range(0, tileSprites.Length)];
+                GameObject tileObj = Instantiate(tilePrefab, new Vector2(j * TILE_SIZE, i * TILE_SIZE), Quaternion.identity);
+                var tile = tileObj.GetComponent<TileObject>();
+                int tileType = Random.Range(0, tileSprites.Length);
+                tile.Init(i, j, tileType, tileSprites[tileType]);
                 tiles[i, j] = tile;
             }
         }
@@ -110,44 +115,63 @@ public class PuzzleMain : MonoBehaviour
         }
         
         Vector2 direction = endDragPosition - startDragPosition;
-        TileObject tileToSwapWith = null;
+        TileObject targetTile = null;
 
         if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
         {
             // Horizontal swipe
             if (direction.x > 0)
-                tileToSwapWith = GetAdjacentTile(selectedTile, Vector2.right);
+                targetTile = GetAdjacentTile(selectedTile, new Tuple<int, int>(0, 1));
             else
-                tileToSwapWith = GetAdjacentTile(selectedTile, Vector2.left);
+                targetTile = GetAdjacentTile(selectedTile, new Tuple<int, int>(0, -1));
         }
         else
         {
             // Vertical swipe
             if (direction.y > 0)
-                tileToSwapWith = GetAdjacentTile(selectedTile, Vector2.up);
+                targetTile = GetAdjacentTile(selectedTile, new Tuple<int, int>(1, 0));
             else
-                tileToSwapWith = GetAdjacentTile(selectedTile, Vector2.down);
+                targetTile = GetAdjacentTile(selectedTile, new Tuple<int, int>(-1, 0));
         }
 
-        if (tileToSwapWith != null)
+        if (targetTile != null)
         {
-            // Swap positions of the selected tile and the adjacent tile
-            Vector3 tempPosition = selectedTile.transform.position;
-            selectedTile.transform.position = tileToSwapWith.transform.position;
-            tileToSwapWith.transform.position = tempPosition;
-
-            // Additionally, you can also swap their references in the 'tiles' array if necessary.
+            StartCoroutine(SwapTileAnim(selectedTile, targetTile));
         }
     }
 
-    TileObject GetAdjacentTile(TileObject tile, Vector2 direction)
+    IEnumerator SwapTileAnim(TileObject tile1, TileObject tile2)
     {
-        Vector2 position = tile.transform.position;
-        RaycastHit2D hit = Physics2D.Raycast(position + direction, Vector2.zero);
+        Debug.LogWarning("Swap tile: "+tile1.xIndex + ","+tile1.yIndex+" <-> "+tile2.xIndex + ","+tile2.yIndex);
+        Vector3 selectDest = tile2.transform.position;
+        Vector3 targetDest = tile1.transform.position;
+        float time = 0;
+        float duration = 0.2f;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+            tile1.transform.position = Vector3.Lerp(tile1.transform.position, selectDest, t);
+            tile2.transform.position = Vector3.Lerp(tile2.transform.position, targetDest, t);
+            yield return null;
+        }
+        tile1.transform.position = selectDest;
+        tile2.transform.position = targetDest;
 
-        if (hit.collider != null && hit.collider.gameObject.CompareTag("TileObject"))
-            return hit.collider.gameObject.GetComponent<TileObject>();
+        tiles[tile1.xIndex, tile1.yIndex] = tile2;
+        tiles[tile2.xIndex, tile2.yIndex] = tile1;
+        tile1.SwapTile(tile2);
+    }
     
+    TileObject GetAdjacentTile(TileObject tile, Tuple<int, int> dir)
+    {
+        var targetX = tile.xIndex + dir.Item1;
+        var targetY = tile.yIndex + dir.Item2;
+        if (targetX >= 0 && targetX < Columns && targetY >= 0 && targetY < Rows)
+        {
+            return tiles[targetX, targetY];
+        }
+
         return null;
     }
 }
