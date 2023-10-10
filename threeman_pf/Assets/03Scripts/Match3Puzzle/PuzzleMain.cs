@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -161,6 +162,20 @@ public class PuzzleMain : MonoBehaviour
         tiles[tile1.xIndex, tile1.yIndex] = tile2;
         tiles[tile2.xIndex, tile2.yIndex] = tile1;
         tile1.SwapTile(tile2);
+        
+        var matched_1 = CheckForMatchesAt(tiles[tile1.xIndex, tile1.yIndex]);
+        if (matched_1.Count >= 3) {
+            foreach(var tile in matched_1) {
+                Destroy(tile.gameObject);
+            }
+        }
+        
+        var matched_2 = CheckForMatchesAt(tiles[tile2.xIndex, tile2.yIndex]);
+        if (matched_2.Count >= 3) {
+            foreach(var tile in matched_2) {
+                Destroy(tile.gameObject);
+            }
+        }
     }
     
     TileObject GetAdjacentTile(TileObject tile, Vector2Int dir)
@@ -173,5 +188,63 @@ public class PuzzleMain : MonoBehaviour
         }
 
         return null;
+    }
+    
+    List<TileObject> CheckForMatchesAt(TileObject tile) {
+        var xIndex = tile.xIndex;
+        var yIndex = tile.yIndex;
+        
+        List<TileObject> matchedTiles = new List<TileObject>();
+
+        // Check horizontally
+        List<TileObject> horizontalMatches = new List<TileObject>();
+        horizontalMatches.Add(tiles[xIndex, yIndex]);
+        for (int i = xIndex + 1; i < Columns; i++)
+        {
+            if (tiles[i, yIndex].tileType == tiles[xIndex, yIndex].tileType)
+            {
+                horizontalMatches.Add(tiles[i, yIndex]);
+            }
+            else
+                break;
+        }
+        for (int i = xIndex - 1; i >= 0; i--)
+        {
+            if (tiles[i, yIndex].tileType == tiles[xIndex, yIndex].tileType)
+            {
+                horizontalMatches.Add(tiles[i, yIndex]);
+            }
+            else
+                break;
+        }
+        if (horizontalMatches.Count >= 3)
+        {
+            matchedTiles.AddRange(horizontalMatches);
+        }
+
+        // Check vertically
+        List<TileObject> verticalMatches = new List<TileObject>();
+        verticalMatches.Add(tiles[xIndex, yIndex]);
+        for (int i = yIndex + 1; i < Rows; i++) {
+            if (tiles[xIndex, i].tileType == tiles[xIndex, yIndex].tileType) {
+                verticalMatches.Add(tiles[xIndex, i]);
+            }
+            else
+                break;
+        }
+        for (int i = yIndex - 1; i >= 0; i--) {
+            if (tiles[xIndex, i].tileType == tiles[xIndex, yIndex].tileType) {
+                verticalMatches.Add(tiles[xIndex, i]);
+            }
+            else
+                break;
+        }
+
+        if (verticalMatches.Count >= 3)
+        {
+            matchedTiles.AddRange(verticalMatches);
+        }
+
+        return matchedTiles;
     }
 }
