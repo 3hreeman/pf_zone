@@ -4,79 +4,78 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class PuzzleMain : MonoBehaviour
-{
+public class PuzzleMain : MonoBehaviour {
     private const float TILE_SIZE = 0.64f;
     public GameObject tilePrefab; // Tile 프리팹을 연결합니다.
-    private const int Rows = 8;
-    private const int Columns = 8;
+    private const int height = 10;
+    private const int width = 5;
     private const int MatchLength = 3;
-    private TileObject[,] tiles = new TileObject[Rows, Columns];
+    private TileObject[,] tiles = new TileObject[width, height];
     public Sprite[] tileSprites;
 
     public Camera mainCam;
-    void Start()
-    {
+
+    void Start() {
         InitializeBoard();
         AdjustCameraPosition();
     }
 
-    void InitializeBoard()
-    {
-        for (int i = 0; i < Rows; i++)
-        {
-            for (int j = 0; j < Columns; j++)
-            {
-                GameObject tileObj = Instantiate(tilePrefab, new Vector2(j * TILE_SIZE, i * TILE_SIZE), Quaternion.identity);
+    void InitializeBoard() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                GameObject tileObj = Instantiate(tilePrefab, GetTilePos(x, y), Quaternion.identity);
                 var tile = tileObj.GetComponent<TileObject>();
                 int tileType = Random.Range(0, tileSprites.Length);
-                tile.Init(i, j, tileType, tileSprites[tileType]);
-                tiles[i, j] = tile;
+                tile.Init(x, y, tileType, tileSprites[tileType]);
+                tiles[x, y] = tile;
             }
         }
     }
+
+    private TileObject GetTile(int x, int y) {
+        if (tiles[x, y] != null) {
+            return tiles[x, y];
+        }
+
+        return null;
+    }
+
+    private Vector2 GetTilePos(int x, int y) {
+        return new Vector2(x * TILE_SIZE, y * TILE_SIZE);
+    }
     
-    void AdjustCameraPosition()
-    {
-        float boardWidth = Columns * TILE_SIZE;
-        float boardHeight = Rows * TILE_SIZE;
+    void AdjustCameraPosition() {
+        float boardWidth = width * TILE_SIZE;
+        float boardHeight = height * TILE_SIZE;
 
         Vector2 boardCenter = new Vector2((boardWidth - TILE_SIZE) / 2, (boardHeight - TILE_SIZE) / 2);
-    
+
         mainCam.transform.position = new Vector3(boardCenter.x, boardCenter.y, mainCam.transform.position.z);
     }
 
     public TileObject selectedTile = null;
 
-    void Update()
-    {
+    void Update() {
         HandleMouseInput();
         HandleMouseDrag();
     }
 
-    void HandleMouseInput()
-    {
-        if (Input.GetMouseButtonDown(0)) // 왼쪽 마우스 버튼을 클릭했을 때
-        {
+    void HandleMouseInput() {
+        if (Input.GetMouseButtonDown(0)) {  // 왼쪽 마우스 버튼을 클릭했을 때
             Vector2 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
 
-            
-            if (hit.collider != null && hit.collider.gameObject.CompareTag("TileObject"))
-            {
+            if (hit.collider != null && hit.collider.gameObject.CompareTag("TileObject")) {
                 TileObject tile = hit.collider.gameObject.GetComponent<TileObject>();
-                if (selectedTile == null)
-                {
+                if (selectedTile == null) {
                     tile.SelectTile();
                     selectedTile = tile;
                 }
-                else if (selectedTile == tile)
-                {
+                else if (selectedTile == tile) {
                     tile.DeselectTile();
                     selectedTile = null;
                 }
-                else
-                {
+                else {
                     selectedTile.DeselectTile();
                     tile.SelectTile();
                     selectedTile = tile;
@@ -84,22 +83,18 @@ public class PuzzleMain : MonoBehaviour
             }
         }
     }
-    
+
     private Vector2 startDragPosition;
     private Vector2 endDragPosition;
 
 // Update 함수 내에 기존 HandleMouseInput() 호출 밑에 추가
-    void HandleMouseDrag()
-    {
-        if (selectedTile != null)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
+    void HandleMouseDrag() {
+        if (selectedTile != null) {
+            if (Input.GetMouseButtonDown(0)) {
                 startDragPosition = mainCam.ScreenToWorldPoint(Input.mousePosition);
             }
 
-            if (Input.GetMouseButtonUp(0))
-            {
+            if (Input.GetMouseButtonUp(0)) {
                 endDragPosition = mainCam.ScreenToWorldPoint(Input.mousePosition);
                 SwapTiles();
                 selectedTile.DeselectTile();
@@ -108,130 +103,209 @@ public class PuzzleMain : MonoBehaviour
         }
     }
 
-    void SwapTiles()
-    {
+    void SwapTiles() {
         if (Vector2.Distance(endDragPosition, startDragPosition) < 0.1f) {
             Debug.Log("mouse drag too short");
             return;
         }
-        
+
         Vector2 direction = endDragPosition - startDragPosition;
         TileObject targetTile = null;
 
-        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y)) //좌우 움직임이 상하 움직임보다 클때 - 
         {
             // Horizontal swipe
             if (direction.x > 0)
-                targetTile = GetAdjacentTile(selectedTile, Vector2Int.up);
+                targetTile = GetAdjacentTile(selectedTile, 1, 0);
             else
-                targetTile = GetAdjacentTile(selectedTile, Vector2Int.down);
+                targetTile = GetAdjacentTile(selectedTile, -1, 0);
         }
-        else
-        {
+        else {
             // Vertical swipe
             if (direction.y > 0)
-                targetTile = GetAdjacentTile(selectedTile, Vector2Int.right);
+                targetTile = GetAdjacentTile(selectedTile, 0, 1);
             else
-                targetTile = GetAdjacentTile(selectedTile, Vector2Int.left);
+                targetTile = GetAdjacentTile(selectedTile, 0, -1);
         }
 
-        if (targetTile != null)
-        {
-            StartCoroutine(SwapTileAnim(selectedTile, targetTile));
+        if (targetTile != null) {
+            StartCoroutine(SwapTileProcess(selectedTile, targetTile));
         }
     }
 
-    IEnumerator SwapTileAnim(TileObject tile1, TileObject tile2)
-    {
-        Debug.LogWarning("Swap tile: "+tile1.xIndex + ","+tile1.yIndex+" <-> "+tile2.xIndex + ","+tile2.yIndex);
-        Vector3 selectDest = tile2.transform.position;
-        Vector3 targetDest = tile1.transform.position;
-        float time = 0;
-        float duration = 0.2f;
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            float t = time / duration;
-            tile1.transform.position = Vector3.Lerp(tile1.transform.position, selectDest, t);
-            tile2.transform.position = Vector3.Lerp(tile2.transform.position, targetDest, t);
-            yield return null;
-        }
-        tile1.transform.position = selectDest;
-        tile2.transform.position = targetDest;
+    ///
+    /// 타일 교체
+    ///     A타일과 B타일을 교체
+    ///     두개의 타일 이동 애니메이션 처리
+    ///     애니메이션 이동 처리 후
+    ///     A타일과 B타일의 위치를 교체
+    ///     A타일과 B타일의 정보를 교체
+    ///     바뀐 위치에서 매칭 여부 체크
+    ///         매칭이 되면 매칭된 타일을 제거
+    ///             매칭된 타일 제거 후 빈 공간을 위에서부터 채워줌
+    ///             채워진 후 매칭 여부 체크
+    /// 
+    ///         매칭이 안되면 다시 원래 위치로 돌아감
+    ///
+    /// 필요한 함수
+    ///     특정 위치에 블록을 생성
+    ///     
+    ///  
+   
+    IEnumerator SwapTileProcess(TileObject tile1, TileObject tile2) {
+        /*
+        StartCoroutine(TranslateTile(tile1, tile2.xIndex, tile2.yIndex));
+        yield return TranslateTile(tile2, tile1.xIndex, tile1.yIndex);
+        */
+        var x1 = tile1.xIndex;
+        var y1 = tile1.yIndex;
+        var x2 = tile2.xIndex;
+        var y2 = tile2.yIndex;
+        StartCoroutine(TranslateTile(tile1, x2, y2));
+        yield return TranslateTile(tile2, x1, y1);
 
-        tiles[tile1.xIndex, tile1.yIndex] = tile2;
-        tiles[tile2.xIndex, tile2.yIndex] = tile1;
-        tile1.SwapTile(tile2);
-        
+        tiles[x1, y1] = tile2;
+        tiles[x2, y2] = tile1;
+
+        var removeList = new List<TileObject>();
         var matched_1 = CheckForMatchesAt(tiles[tile1.xIndex, tile1.yIndex]);
         if (matched_1.Count >= 3) {
-            foreach(var tile in matched_1) {
-                Destroy(tile.gameObject);
+            foreach (var tile in matched_1) {
+                removeList.Add(tile);
             }
         }
-        
+
         var matched_2 = CheckForMatchesAt(tiles[tile2.xIndex, tile2.yIndex]);
         if (matched_2.Count >= 3) {
-            foreach(var tile in matched_2) {
-                Destroy(tile.gameObject);
+            foreach (var tile in matched_2) {
+                removeList.Add(tile);
             }
         }
+
+        if (removeList.Count > 0) {
+            foreach (var tile in removeList) {
+                tiles[tile.xIndex, tile.yIndex] = null;
+                Destroy(tile.gameObject);
+            }
+            // Debug.LogWarning("Swap tile: " + tile1.xIndex + "," + tile1.yIndex + " <-> " + tile2.xIndex + "," + tile2.yIndex);
+            FillEmptySpaces();
+        }
+        else {
+            //return to original position
+            Debug.LogWarning("Not Matched. Return to original position");
+            x1 = tile1.xIndex;
+            y1 = tile1.yIndex;
+            x2 = tile2.xIndex;
+            y2 = tile2.yIndex;
+            StartCoroutine(TranslateTile(tile1, x2, y2));
+            yield return TranslateTile(tile2, x1, y1);
+            tiles[x1, y1] = tile2;
+            tiles[x2, y2] = tile1;
+        }
     }
-    
-    TileObject GetAdjacentTile(TileObject tile, Vector2Int dir)
-    {
-        var targetX = tile.xIndex + dir.x;
-        var targetY = tile.yIndex + dir.y;
-        if (targetX >= 0 && targetX < Columns && targetY >= 0 && targetY < Rows)
-        {
+
+
+    IEnumerator TranslateTile(TileObject tile, int x, int y) {
+        Vector2 targetPos = GetTilePos(x, y);
+        float time = 0;
+        float duration = 0.2f;
+        while (time < duration) {
+            time += Time.deltaTime;
+            float t = time / duration;
+            var nextPos = Vector2.Lerp(tile.transform.position, targetPos, t);
+            tile.transform.position = nextPos;
+            yield return null;
+        }
+
+        tile.transform.position = targetPos;
+        tile.SetTileXY(x, y);
+    }
+
+    void FillEmptySpaces() {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height - 1; y++) {   // topmost row is handled separately
+                if (tiles[x, y] == null) {
+                    for (int up_y = y + 1; up_y < height; up_y++) {
+                        if (tiles[x, up_y] != null) {
+                            tiles[x,y] = tiles[x, up_y];
+                            tiles[x, up_y] = null;
+                            StartCoroutine(TranslateTile(tiles[x, y], x, y));
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        /*
+        // Create new tiles in the empty spaces at the top
+        for (int column = 0; column < width; column++) {
+            for (int row = height - 1; row >= 0; row--) {
+                if (tiles[row, column] == null) {
+                    GameObject newTile = Instantiate(tilePrefab, new Vector2(column * TILE_SIZE, row * TILE_SIZE),
+                        Quaternion.identity);
+                    newTile.GetComponent<SpriteRenderer>().sprite = tileSprites[Random.Range(0, tileSprites.Length)];
+                    tiles[row, column] = newTile.GetComponent<TileObject>();
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        */
+        
+    }
+
+    TileObject GetAdjacentTile(TileObject tile, int x, int y) {
+        var targetX = tile.xIndex + x;
+        var targetY = tile.yIndex + y;
+        if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
             return tiles[targetX, targetY];
         }
 
         return null;
     }
-    
+
     List<TileObject> CheckForMatchesAt(TileObject tile) {
         var xIndex = tile.xIndex;
         var yIndex = tile.yIndex;
-        
+
         List<TileObject> matchedTiles = new List<TileObject>();
 
         // Check horizontally
         List<TileObject> horizontalMatches = new List<TileObject>();
         horizontalMatches.Add(tiles[xIndex, yIndex]);
-        for (int i = xIndex + 1; i < Columns; i++)
-        {
-            if (tiles[i, yIndex].tileType == tiles[xIndex, yIndex].tileType)
-            {
+        for (int i = xIndex + 1; i < width; i++) {
+            if (tiles[i, yIndex].tileType == tiles[xIndex, yIndex].tileType) {
                 horizontalMatches.Add(tiles[i, yIndex]);
             }
             else
                 break;
         }
-        for (int i = xIndex - 1; i >= 0; i--)
-        {
-            if (tiles[i, yIndex].tileType == tiles[xIndex, yIndex].tileType)
-            {
+
+        for (int i = xIndex - 1; i >= 0; i--) {
+            if (tiles[i, yIndex].tileType == tiles[xIndex, yIndex].tileType) {
                 horizontalMatches.Add(tiles[i, yIndex]);
             }
             else
                 break;
         }
-        if (horizontalMatches.Count >= 3)
-        {
+
+        if (horizontalMatches.Count >= 3) {
             matchedTiles.AddRange(horizontalMatches);
         }
 
         // Check vertically
         List<TileObject> verticalMatches = new List<TileObject>();
         verticalMatches.Add(tiles[xIndex, yIndex]);
-        for (int i = yIndex + 1; i < Rows; i++) {
+        for (int i = yIndex + 1; i < height; i++) {
             if (tiles[xIndex, i].tileType == tiles[xIndex, yIndex].tileType) {
                 verticalMatches.Add(tiles[xIndex, i]);
             }
             else
                 break;
         }
+
         for (int i = yIndex - 1; i >= 0; i--) {
             if (tiles[xIndex, i].tileType == tiles[xIndex, yIndex].tileType) {
                 verticalMatches.Add(tiles[xIndex, i]);
@@ -240,11 +314,37 @@ public class PuzzleMain : MonoBehaviour
                 break;
         }
 
-        if (verticalMatches.Count >= 3)
-        {
+        if (verticalMatches.Count >= 3) {
             matchedTiles.AddRange(verticalMatches);
         }
-
+        /*
+        var horizontalMatches = GetMatches(xIndex, yIndex, 1, 0);
+        var verticalMatches = GetMatches(xIndex, yIndex, 0, 1);
+        if (horizontalMatches.Count >= 3) {
+            matchedTiles.AddRange(horizontalMatches);
+        }
+        if(verticalMatches.Count >= 3) {
+            matchedTiles.AddRange(verticalMatches);
+        }
+        */
+        
         return matchedTiles;
+    }
+    
+    private List<TileObject> GetMatches(int startX, int startY, int stepX, int stepY) {
+        List<TileObject> matches = new List<TileObject>();
+        int x = startX;
+        int y = startY;
+
+        while (x >= 0 && x < width && y >= 0 && y < height) {
+            if (tiles[x, y].tileType == tiles[startX, startY].tileType) {
+                matches.Add(tiles[x, y]);
+            } else {
+                break;
+            }
+            x += stepX;
+            y += stepY;
+        }
+        return matches;
     }
 }
