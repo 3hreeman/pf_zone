@@ -23,15 +23,23 @@ public class PuzzleMain : MonoBehaviour {
     void InitializeBoard() {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                GameObject tileObj = Instantiate(tilePrefab, GetTilePos(x, y), Quaternion.identity);
-                var tile = tileObj.GetComponent<TileObject>();
-                int tileType = Random.Range(0, tileSprites.Length);
-                tile.Init(x, y, tileType, tileSprites[tileType]);
+                var pos = GetTilePos(x, y);
+                var tile = GenerateRandomTile(pos);
+                tile.SetTileXY(x, y);
                 tiles[x, y] = tile;
             }
         }
     }
 
+    
+    TileObject GenerateRandomTile(Vector2 pos) {
+        GameObject tileObj = Instantiate(tilePrefab, pos, Quaternion.identity);
+        var tile = tileObj.GetComponent<TileObject>();
+        int tileType = Random.Range(0, tileSprites.Length);
+        tile.SetTileType(tileType);
+        return tile;
+    }
+    
     private TileObject GetTile(int x, int y) {
         if (tiles[x, y] != null) {
             return tiles[x, y];
@@ -133,25 +141,6 @@ public class PuzzleMain : MonoBehaviour {
         }
     }
 
-    ///
-    /// 타일 교체
-    ///     A타일과 B타일을 교체
-    ///     두개의 타일 이동 애니메이션 처리
-    ///     애니메이션 이동 처리 후
-    ///     A타일과 B타일의 위치를 교체
-    ///     A타일과 B타일의 정보를 교체
-    ///     바뀐 위치에서 매칭 여부 체크
-    ///         매칭이 되면 매칭된 타일을 제거
-    ///             매칭된 타일 제거 후 빈 공간을 위에서부터 채워줌
-    ///             채워진 후 매칭 여부 체크
-    /// 
-    ///         매칭이 안되면 다시 원래 위치로 돌아감
-    ///
-    /// 필요한 함수
-    ///     특정 위치에 블록을 생성
-    ///     
-    ///  
-   
     IEnumerator SwapTileProcess(TileObject tile1, TileObject tile2) {
         /*
         StartCoroutine(TranslateTile(tile1, tile2.xIndex, tile2.yIndex));
@@ -188,7 +177,7 @@ public class PuzzleMain : MonoBehaviour {
                 Destroy(tile.gameObject);
             }
             // Debug.LogWarning("Swap tile: " + tile1.xIndex + "," + tile1.yIndex + " <-> " + tile2.xIndex + "," + tile2.yIndex);
-            FillEmptySpaces();
+            yield return FillEmptySpaces();
         }
         else {
             //return to original position
@@ -221,38 +210,43 @@ public class PuzzleMain : MonoBehaviour {
         tile.SetTileXY(x, y);
     }
 
-    void FillEmptySpaces() {
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height - 1; y++) {   // topmost row is handled separately
-                if (tiles[x, y] == null) {
-                    for (int up_y = y + 1; up_y < height; up_y++) {
-                        if (tiles[x, up_y] != null) {
-                            tiles[x,y] = tiles[x, up_y];
-                            tiles[x, up_y] = null;
-                            StartCoroutine(TranslateTile(tiles[x, y], x, y));
+    IEnumerator FillEmptySpaces() {
+        for(int y=0; y<height-1; y++) {
+            bool isFilled = false;
+            for(int x=0; x<width; x++) {
+                if(tiles[x,y] == null) {
+                    for(int up_y = y+1; up_y<height; up_y++) {
+                        if(tiles[x,up_y] != null) {
+                            tiles[x,y] = tiles[x,up_y];
+                            tiles[x,up_y] = null;
+                            StartCoroutine(TranslateTile(tiles[x,y], x, y));
+                            isFilled = true;
                             break;
                         }
                     }
                 }
             }
-        }
 
-        /*
+            if (isFilled) {
+                // yield return new WaitForSeconds(0.1f);
+                yield return null;
+            }
+        }
+        
         // Create new tiles in the empty spaces at the top
-        for (int column = 0; column < width; column++) {
-            for (int row = height - 1; row >= 0; row--) {
-                if (tiles[row, column] == null) {
-                    GameObject newTile = Instantiate(tilePrefab, new Vector2(column * TILE_SIZE, row * TILE_SIZE),
-                        Quaternion.identity);
-                    newTile.GetComponent<SpriteRenderer>().sprite = tileSprites[Random.Range(0, tileSprites.Length)];
-                    tiles[row, column] = newTile.GetComponent<TileObject>();
+        for (int x = 0; x < width; x++) {
+            for (int y = height - 1; y >= 0; y--) {
+                if (tiles[x, y] == null) {
+                    var pos = GetTilePos(x, y);
+                    var newTile = GenerateRandomTile(pos);
+                    newTile.SetTileXY(x, y);
+                    tiles[x, y] = newTile;
                 }
                 else {
                     break;
                 }
             }
         }
-        */
         
     }
 
@@ -262,7 +256,7 @@ public class PuzzleMain : MonoBehaviour {
         if (targetX >= 0 && targetX < width && targetY >= 0 && targetY < height) {
             return tiles[targetX, targetY];
         }
-
+        
         return null;
     }
 
@@ -276,6 +270,7 @@ public class PuzzleMain : MonoBehaviour {
         List<TileObject> horizontalMatches = new List<TileObject>();
         horizontalMatches.Add(tiles[xIndex, yIndex]);
         for (int i = xIndex + 1; i < width; i++) {
+            if(GetTile(i, yIndex) == null) break;
             if (tiles[i, yIndex].tileType == tiles[xIndex, yIndex].tileType) {
                 horizontalMatches.Add(tiles[i, yIndex]);
             }
@@ -284,6 +279,7 @@ public class PuzzleMain : MonoBehaviour {
         }
 
         for (int i = xIndex - 1; i >= 0; i--) {
+            if (GetTile(i, yIndex) == null) break;
             if (tiles[i, yIndex].tileType == tiles[xIndex, yIndex].tileType) {
                 horizontalMatches.Add(tiles[i, yIndex]);
             }
@@ -299,6 +295,8 @@ public class PuzzleMain : MonoBehaviour {
         List<TileObject> verticalMatches = new List<TileObject>();
         verticalMatches.Add(tiles[xIndex, yIndex]);
         for (int i = yIndex + 1; i < height; i++) {
+            if (GetTile(xIndex, i) == null) 
+                break;
             if (tiles[xIndex, i].tileType == tiles[xIndex, yIndex].tileType) {
                 verticalMatches.Add(tiles[xIndex, i]);
             }
@@ -307,6 +305,8 @@ public class PuzzleMain : MonoBehaviour {
         }
 
         for (int i = yIndex - 1; i >= 0; i--) {
+            if (tiles[xIndex, i] == null)
+                break;
             if (tiles[xIndex, i].tileType == tiles[xIndex, yIndex].tileType) {
                 verticalMatches.Add(tiles[xIndex, i]);
             }
@@ -317,34 +317,7 @@ public class PuzzleMain : MonoBehaviour {
         if (verticalMatches.Count >= 3) {
             matchedTiles.AddRange(verticalMatches);
         }
-        /*
-        var horizontalMatches = GetMatches(xIndex, yIndex, 1, 0);
-        var verticalMatches = GetMatches(xIndex, yIndex, 0, 1);
-        if (horizontalMatches.Count >= 3) {
-            matchedTiles.AddRange(horizontalMatches);
-        }
-        if(verticalMatches.Count >= 3) {
-            matchedTiles.AddRange(verticalMatches);
-        }
-        */
         
         return matchedTiles;
-    }
-    
-    private List<TileObject> GetMatches(int startX, int startY, int stepX, int stepY) {
-        List<TileObject> matches = new List<TileObject>();
-        int x = startX;
-        int y = startY;
-
-        while (x >= 0 && x < width && y >= 0 && y < height) {
-            if (tiles[x, y].tileType == tiles[startX, startY].tileType) {
-                matches.Add(tiles[x, y]);
-            } else {
-                break;
-            }
-            x += stepX;
-            y += stepY;
-        }
-        return matches;
     }
 }

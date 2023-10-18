@@ -1,12 +1,18 @@
+using System;
+using TMPro;
 using UnityEngine;
 
 public class TileObject : MonoBehaviour
 {
+    [SerializeField] private Sprite[] tileSprites;  
     public bool isSelected { get; private set; } = false;
     private SpriteRenderer spriteRenderer;
-    public int xIndex { get; private set; }
-    public int yIndex { get; private set; }
+    public int xIndex;
+    public int yIndex;
     public int tileType;
+
+    public TextMeshPro posText;
+    
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -14,12 +20,25 @@ public class TileObject : MonoBehaviour
 
     public void Init(int x, int y, int type, Sprite spr)
     {
-        xIndex = x;
-        yIndex = y;
-        tileType = type;
-        spriteRenderer.sprite = spr;
+        SetTileXY(x, y);
+        SetTileType(type);
     }
 
+    private void Update() {
+        var str = $"({xIndex}, {yIndex})";
+        posText.text = str;
+        if (tileSprites[tileType] == spriteRenderer.sprite) {
+            posText.color = Color.black;
+        }
+        else {
+            posText.color = Color.red;
+        }
+    }
+
+    public void SetTileType(int type) {
+        tileType = type;
+        spriteRenderer.sprite = tileSprites[type];
+    }
     public void SelectTile()
     {
         isSelected = true;
