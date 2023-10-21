@@ -2,26 +2,27 @@ using System;
 using TMPro;
 using UnityEngine;
 
-public class TileObject : MonoBehaviour
-{
-    [SerializeField] private Sprite[] tileSprites;  
+public class TileObject : MonoBehaviour {
+    public enum TileType {
+        NormalTile_1 = 0,
+        NormalTile_2 = 1,
+        NormalTile_3 = 2,
+        NormalTile_4 = 3,
+        ObstacleTile_1 = 101,
+    }
+
+    [SerializeField] private Sprite[] tileSprites;
+    [SerializeField] private Sprite[] obstacleSprites;
     public bool isSelected { get; private set; } = false;
     private SpriteRenderer spriteRenderer;
     public int xIndex;
     public int yIndex;
     public int tileType;
-
+    public int tileHp;
     public TextMeshPro posText;
-    
-    private void Awake()
-    {
-        spriteRenderer = GetComponent<SpriteRenderer>();
-    }
 
-    public void Init(int x, int y, int type, Sprite spr)
-    {
-        SetTileXY(x, y);
-        SetTileType(type);
+    private void Awake() {
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Update() {
@@ -39,15 +40,14 @@ public class TileObject : MonoBehaviour
         tileType = type;
         spriteRenderer.sprite = tileSprites[type];
     }
-    public void SelectTile()
-    {
+
+    public void SelectTile() {
         isSelected = true;
         // 선택된 타일에 대한 간단한 피드백으로 색상을 변경합니다.
         spriteRenderer.color = Color.yellow;
     }
 
-    public void DeselectTile()
-    {
+    public void DeselectTile() {
         isSelected = false;
         spriteRenderer.color = Color.white;
     }
@@ -63,5 +63,15 @@ public class TileObject : MonoBehaviour
         SetTileXY(tile.xIndex, tile.yIndex);
         tile.SetTileXY(orgX, orgY);
     }
-   
+
+    public void TakeDmgTile(int dmg) {
+        tileHp -= dmg;
+        if (tileHp <= 0) {
+            Removetile();
+        }
+    }
+
+    public void Removetile() {
+        Destroy(gameObject);
+    }
 }

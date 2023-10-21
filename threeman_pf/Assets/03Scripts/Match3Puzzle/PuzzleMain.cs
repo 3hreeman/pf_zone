@@ -31,14 +31,22 @@ public class PuzzleMain : MonoBehaviour {
         }
     }
 
-    
-    TileObject GenerateRandomTile(Vector2 pos) {
+    TileObject GenerateNormalTile(Vector2 pos) {
         GameObject tileObj = Instantiate(tilePrefab, pos, Quaternion.identity);
         var tile = tileObj.GetComponent<TileObject>();
-        int tileType = Random.Range(0, tileSprites.Length);
+        int tileType = Random.Range(0, 4);
         tile.SetTileType(tileType);
         return tile;
     }
+
+    TileObject GenerateObstacleTile(Vector2 pos) {
+        GameObject tileObj = Instantiate(tilePrefab, pos, Quaternion.identity);
+        var tile = tileObj.GetComponent<TileObject>();
+        int tileType = 101;
+        tile.SetTileType(tileType);
+        return tile;    
+    }
+    
     
     private TileObject GetTile(int x, int y) {
         if (tiles[x, y] != null) {
@@ -90,12 +98,32 @@ public class PuzzleMain : MonoBehaviour {
                 }
             }
         }
+        else if (Input.GetMouseButtonDown(1)) {
+            var tile = GetSelectTile();
+            if (tile != null) {
+                tile.TakeDmgTile(1);
+                tile.SetTileType(Random.Range(0, tileSprites.Length));
+            }
+        }
+    }
+
+    private TileObject GetSelectTile() {
+        Vector2 mousePos = mainCam.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+
+        if (hit.collider != null && hit.collider.gameObject.CompareTag("TileObject")) {
+            TileObject tile = hit.collider.gameObject.GetComponent<TileObject>();
+            if (tile != null) {
+                return tile;
+            }
+        }
+
+        return null;
     }
 
     private Vector2 startDragPosition;
     private Vector2 endDragPosition;
 
-// Update 함수 내에 기존 HandleMouseInput() 호출 밑에 추가
     void HandleMouseDrag() {
         if (selectedTile != null) {
             if (Input.GetMouseButtonDown(0)) {
@@ -174,7 +202,7 @@ public class PuzzleMain : MonoBehaviour {
         if (removeList.Count > 0) {
             foreach (var tile in removeList) {
                 tiles[tile.xIndex, tile.yIndex] = null;
-                Destroy(tile.gameObject);
+                tile.Removetile();
             }
             // Debug.LogWarning("Swap tile: " + tile1.xIndex + "," + tile1.yIndex + " <-> " + tile2.xIndex + "," + tile2.yIndex);
             yield return FillEmptySpaces();
@@ -238,7 +266,7 @@ public class PuzzleMain : MonoBehaviour {
             for (int y = height - 1; y >= 0; y--) {
                 if (tiles[x, y] == null) {
                     var pos = GetTilePos(x, y);
-                    var newTile = GenerateRandomTile(pos);
+                    var newTile = GenerateNormalTile(pos);
                     newTile.SetTileXY(x, y);
                     tiles[x, y] = newTile;
                 }
