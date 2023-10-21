@@ -52,9 +52,13 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 73a2d8426d66b3d409e4951226f7b2be, type: 3}
   - {fileID: 21300000, guid: 6bf122a870c98eb4cb6734f7d53eeaa5, type: 3}
   - {fileID: 21300000, guid: 59a8c90a61254ac4ab73fcb226bd9868, type: 3}
+  obstacleSprites:
+  - {fileID: 21300000, guid: cbbf7ed749fe4974ea2bdb577fd5e235, type: 3}
+  tileType: 0
+  tileId: 0
   xIndex: 0
   yIndex: 0
-  tileType: 0
+  tileHp: 0
   posText: {fileID: 5358836895430152853}
 --- !u!212 &4985137975403615602
 SpriteRenderer:
@@ -243,8 +247,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

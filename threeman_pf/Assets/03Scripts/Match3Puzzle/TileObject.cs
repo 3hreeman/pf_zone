@@ -1,23 +1,21 @@
-using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class TileObject : MonoBehaviour {
     public enum TileType {
-        NormalTile_1 = 0,
-        NormalTile_2 = 1,
-        NormalTile_3 = 2,
-        NormalTile_4 = 3,
-        ObstacleTile_1 = 101,
+        Normal,
+        Obstacle
     }
 
     [SerializeField] private Sprite[] tileSprites;
     [SerializeField] private Sprite[] obstacleSprites;
     public bool isSelected { get; private set; } = false;
     private SpriteRenderer spriteRenderer;
+    public TileType tileType;
+    public int tileId;
     public int xIndex;
     public int yIndex;
-    public int tileType;
     public int tileHp;
     public TextMeshPro posText;
 
@@ -28,7 +26,7 @@ public class TileObject : MonoBehaviour {
     private void Update() {
         var str = $"({xIndex}, {yIndex})";
         posText.text = str;
-        if (tileSprites[tileType] == spriteRenderer.sprite) {
+        if (tileSprites[tileId] == spriteRenderer.sprite) {
             posText.color = Color.black;
         }
         else {
@@ -36,20 +34,26 @@ public class TileObject : MonoBehaviour {
         }
     }
 
-    public void SetTileType(int type) {
-        tileType = type;
-        spriteRenderer.sprite = tileSprites[type];
+    public void SetNormalTile(int id) {
+        tileType = TileType.Normal;
+        tileId = id;
+        tileHp = 1;
+        spriteRenderer.sprite = tileSprites[tileId];
     }
-
+    
+    public void SetObstacleTile(int id) {
+        tileType = TileType.Obstacle;
+        tileId = id;
+        tileHp = 1;
+        spriteRenderer.sprite = obstacleSprites[tileId];
+    }
+    
     public void SelectTile() {
         isSelected = true;
-        // 선택된 타일에 대한 간단한 피드백으로 색상을 변경합니다.
-        spriteRenderer.color = Color.yellow;
     }
 
     public void DeselectTile() {
         isSelected = false;
-        spriteRenderer.color = Color.white;
     }
 
     public void SetTileXY(int x, int y) {
@@ -57,6 +61,9 @@ public class TileObject : MonoBehaviour {
         yIndex = y;
     }
 
+    public void SetTilePos(Vector2 pos) {
+        transform.position = pos;
+    }
     public void SwapTile(TileObject tile) {
         var orgX = xIndex;
         var orgY = yIndex;
@@ -64,11 +71,14 @@ public class TileObject : MonoBehaviour {
         tile.SetTileXY(orgX, orgY);
     }
 
-    public void TakeDmgTile(int dmg) {
+    public bool TakeDmgAndCheckDie(int dmg) {
         tileHp -= dmg;
         if (tileHp <= 0) {
             Removetile();
+            return true;
         }
+
+        return false;
     }
 
     public void Removetile() {
