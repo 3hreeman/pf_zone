@@ -133,6 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 231137089}
   - component: {fileID: 231137088}
+  - component: {fileID: 231137090}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -152,13 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34d158d6ec642134ea7297d4761703a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilePrefab: {fileID: 2125721022850627804, guid: 36183509dbd38fa49bed5b0dda65ce8d, type: 3}
-  tileSprites:
-  - {fileID: 21300000, guid: 637f87803b358d7458dd1e497e31c2b3, type: 3}
-  - {fileID: 21300000, guid: 73a2d8426d66b3d409e4951226f7b2be, type: 3}
-  - {fileID: 21300000, guid: 6bf122a870c98eb4cb6734f7d53eeaa5, type: 3}
-  - {fileID: 21300000, guid: 59a8c90a61254ac4ab73fcb226bd9868, type: 3}
   mainCam: {fileID: 392314413}
+  boardManager: {fileID: 231137090}
 --- !u!4 &231137089
 Transform:
   m_ObjectHideFlags: 0
@@ -174,6 +170,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &231137090
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 231137087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f7f079b96fc647b49ac05741f48e0c5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tilePrefab: {fileID: 2125721022850627804, guid: 36183509dbd38fa49bed5b0dda65ce8d, type: 3}
+  selectedTile: {fileID: 0}
 --- !u!1 &392314411
 GameObject:
   m_ObjectHideFlags: 0
