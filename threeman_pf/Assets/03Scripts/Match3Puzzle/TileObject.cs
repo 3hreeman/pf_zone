@@ -18,7 +18,7 @@ public class TileObject : MonoBehaviour {
     public int yIndex;
     public int tileHp;
     public TextMeshPro posText;
-
+    public bool IsMoving = false;
     private void Awake() {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
