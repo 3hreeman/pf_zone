@@ -12,7 +12,7 @@ public class WeaponObject : MonoBehaviour {
         isInit = true;
     }
 
-    public void Update() {
+    public void UpdateWeapon() {
         if(isInit == false) return;
         aimPos = unitObj.aimVector;
         var playerPos = unitObj.transform.position;

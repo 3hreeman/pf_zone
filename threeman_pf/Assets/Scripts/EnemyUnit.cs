@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Pool;
 using Random = UnityEngine.Random;
@@ -31,9 +32,16 @@ public class EnemyUnit : UnitBase {
         weapon.Init(this);
     }
 
-    public void Update() {
-        UpdateAim();
+    private void Update() {
+        if (GameMain.instance.testType == GameMain.TestType.UseUpdate) {
+            UpdateEnemy();
+        }
+    }
+
+    public void UpdateEnemy() {
         DoMove();
+        // weapon.UpdateWeapon();
+        // UpdateAim();
         // CheckAttack();
     }
 

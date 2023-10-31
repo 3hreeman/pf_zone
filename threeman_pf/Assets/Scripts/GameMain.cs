@@ -1,12 +1,21 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class GameMain : MonoBehaviour {
+    public static GameMain instance;
+    public enum TestType {
+        None,
+        UseMain,
+        UseUpdate,
+        UseJob
+    }
     [Range(0.1f, 5f)] public float enemyGenTime = 5f;
     [Range(0.1f, 0.5f)] public float enemyGenTimeDecrease = 0.1f;
     public PlayerUnit player;
@@ -15,52 +24,45 @@ public class GameMain : MonoBehaviour {
     private IObjectPool<EnemyUnit> enemyPool;
 
     private CancellationTokenSource cts = new();
+
+    [FormerlySerializedAs("enemyGenerator")] public EnemyUpdater enemyUpdater;
     
+    public List<EnemyUnit> enemyList = new List<EnemyUnit>();
+
+    public TestType testType = TestType.UseMain;
+
+    public bool useEnemyGen = false;
     private void Start() {
+        instance = this;
+        enemyUpdater.Init(this);
         enemyPool = new ObjectPool<EnemyUnit>(CreateEnemy, OnGetEnemy, OnReleaseEnemy, OnDestroyEnemy, maxSize: 20);
         enemyGenTime = 5;
-        StartCoroutine(DoEnemyGen());
-    }
-
-    private async UniTaskVoid TestTask1(CancellationToken token) {
-        //token.Cancel이 불릴 경우 TestTask1이 중단된다
+        for (int i = 0; i < 10000; i++) {
+            GenerateEnemy();
+        }
+        TaskEnemyGen(cts.Token).Forget();
         
-        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
-        Debug.LogWarning("1 sec passed");
-        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
-        Debug.LogWarning("2 sec passed");
-        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
-        Debug.LogWarning("3 sec passed");
-        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
-        Debug.LogWarning("4 sec passed");
-        await UniTask.Delay(TimeSpan.FromSeconds(1), cancellationToken: token);
-        Debug.LogWarning("5 sec passed");
+        //for generator
     }
-
+  
     private async UniTaskVoid TaskEnemyGen(CancellationToken token) {
         while (true) {
-            var pos = player.transform.position;
-            var enemy = enemyPool.Get();
-            float x = pos.x + Random.Range(-5.0f, 5.0f);
-            float y = pos.y + Random.Range(-5.0f, 5.0f);
-            enemy.transform.position = new Vector3(x,y, 0);
-            enemy.InitEnemy(player);
+            if (useEnemyGen) {
+                GenerateEnemy();
+            }
             await UniTask.Delay(TimeSpan.FromSeconds(enemyGenTime), cancellationToken: token);  //token.Cancel()이 호출되면 
         }
     }
     
-    IEnumerator DoEnemyGen() {
-        while (true) {
-            var pos = player.transform.position;
-            var enemy = enemyPool.Get();
-            float x = pos.x + Random.Range(-5.0f, 5.0f);
-            float y = pos.y + Random.Range(-5.0f, 5.0f);
-            enemy.transform.position = new Vector3(x,y, 0);
-            enemy.InitEnemy(player);
-            yield return new WaitForSeconds(enemyGenTime);
-        }
+    public void GenerateEnemy() {
+        var pos = player.transform.position;
+        var enemy = enemyPool.Get();
+        float x = pos.x + Random.Range(-5.0f, 5.0f);
+        float y = pos.y + Random.Range(-5.0f, 5.0f);
+        enemy.transform.position = new Vector3(x,y, 0);
+        enemy.InitEnemy(player);
     }
-
+    
     private void Update() {
         if (enemyGenTime > 0.1f) {
             enemyGenTime = (enemyGenTime - Time.deltaTime * enemyGenTimeDecrease);
@@ -68,10 +70,34 @@ public class GameMain : MonoBehaviour {
         else {
             enemyGenTime = 0.1f;
         }
-
-        if (Input.GetKeyDown(KeyCode.Space)) {
+        
+        if (enemyUpdater.currentEnemyCount > EnemyUpdater.MAX_ENEMY_COUNT) {
             Debug.LogWarning("Stop Enemy Generate");
             cts.Cancel();
+        }
+
+        
+        if (testType == TestType.UseJob) {
+            TestJob();
+        }else if (testType == TestType.UseMain) {
+            TestUpdate();
+        }
+    }
+
+    void TestUpdate() {
+        foreach(var enemy in enemyList) {
+            enemy.UpdateEnemy();
+        }            
+    }
+
+    void TestJob() {
+        enemyUpdater.EnemyUpdate(player.transform);
+
+    }
+    
+    private void LateUpdate() {
+        if (testType == TestType.UseJob) {
+            enemyUpdater.EnemyLateUpdate();
         }
     }
 
@@ -83,10 +109,15 @@ public class GameMain : MonoBehaviour {
     
     private void OnGetEnemy(EnemyUnit enemy) {
         enemy.gameObject.SetActive(true);
+        enemyList.Add(enemy);
+        enemyUpdater.AddEnemy(enemy);
     }
     
     private void OnReleaseEnemy(EnemyUnit enemy) {
         enemy.gameObject.SetActive(false);
+        int idx = enemyList.IndexOf(enemy);
+        enemyUpdater.RemoveEnemy(idx);
+        enemyList.Remove(enemy);
     }
     
     private void OnDestroyEnemy(EnemyUnit enemy) {

@@ -24,6 +24,7 @@ public class PlayerUnit : UnitBase {
 
     public void Update() {
         DoMove();
+        weapon.UpdateWeapon();
     }
 
     private bool CheckDashAvailable() {
