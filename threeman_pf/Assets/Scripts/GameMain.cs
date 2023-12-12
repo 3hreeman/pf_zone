@@ -32,12 +32,14 @@ public class GameMain : MonoBehaviour {
     public TestType testType = TestType.UseMain;
 
     public bool useEnemyGen = false;
+    public int InitCount = 1000;
+    
     private void Start() {
         instance = this;
         enemyUpdater.Init(this);
         enemyPool = new ObjectPool<EnemyUnit>(CreateEnemy, OnGetEnemy, OnReleaseEnemy, OnDestroyEnemy, maxSize: 20);
         enemyGenTime = 5;
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < InitCount; i++) {
             GenerateEnemy();
         }
         TaskEnemyGen(cts.Token).Forget();
