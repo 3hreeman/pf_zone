@@ -2,16 +2,24 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class BallGameMain : MonoBehaviour {
+    public enum GameType {
+        Basic,
+        SlingShot,
+    }
+    
     public const int MAX_LEVEL = 10;
-    public const float HEIGHT = 8f;
+
+    
     public float[] tierProbability = new float[10] {
         0.3f, 0.3f, 0.2f, 0.15f, 0.1f,
         0.05f, 0.025f, 0.01f, 0.005f, 0.001f
     };
     
+    public GameType gameType = GameType.Basic;
+    
     public GameObject ballPrefab;
     public Transform ballParent;
-    
+    public GameObject startHeightObj;    
     public Camera mainCamera;
     
     public int nextBallTier = 0;
@@ -36,13 +44,25 @@ public class BallGameMain : MonoBehaviour {
         return ballObj;
     }
 
+    public void SetRandomForce(BallObject ball) {
+        var force = new Vector2(Random.Range(-10f, 10f), Random.Range(-10f, 10f));
+        ball.GetComponent<Rigidbody2D>().AddForce(force, ForceMode2D.Impulse);
+    }
+    
     public void CheckPlayerInput() {
         if (Input.GetMouseButtonDown(0)) {
             var pos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            pos.y = HEIGHT;
-            pos.z = 0;
-            CreateBall(pos, nextBallTier);
-            nextBallTier = GetRandomTier();
+            if(gameType == GameType.Basic) {
+                pos.y = startHeightObj.transform.position.y;
+                pos.z = 0;
+                CreateBall(pos, nextBallTier);
+                nextBallTier = GetRandomTier();
+            }else if(gameType == GameType.SlingShot) {
+                pos.z = 0;
+                var newBall = CreateBall(pos, nextBallTier);
+                SetRandomForce(newBall);
+                nextBallTier = GetRandomTier();
+            }
         }
     }
     
