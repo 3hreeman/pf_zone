@@ -7,17 +7,17 @@ public class BallGameMain : MonoBehaviour {
         SlingShot,
     }
     
-    public const int MAX_LEVEL = 10;
+    public const int MAX_LEVEL = 9;
 
+    public GameObject[] ballPrefabs;
     
-    public float[] tierProbability = new float[10] {
-        0.3f, 0.3f, 0.2f, 0.15f, 0.1f,
-        0.05f, 0.025f, 0.01f, 0.005f, 0.001f
+    public float[] tierProbability = new float[9] {
+        0.25f, 0.25f, 0.2f, 0.2f, 0.15f,
+        0.15f, 0.1f, 0.1f, 0.05f
     };
     
     public GameType gameType = GameType.Basic;
     
-    public GameObject ballPrefab;
     public Transform ballParent;
     public GameObject startHeightObj;    
     public Camera mainCamera;
@@ -36,7 +36,8 @@ public class BallGameMain : MonoBehaviour {
     public int ballNumber = 0; 
 
     public BallObject CreateBall(Vector3 pos, int tier) {
-        var ball = Instantiate(ballPrefab, pos, Quaternion.identity, ballParent);
+        var prefab = ballPrefabs[tier];
+        var ball = Instantiate(prefab, pos, Quaternion.identity, ballParent);
         var ballObj = ball.GetComponent<BallObject>();
         ballObj.Init(tier);
         ballObj.name = $"ball_{ballNumber}";
@@ -52,17 +53,27 @@ public class BallGameMain : MonoBehaviour {
     public void CheckPlayerInput() {
         if (Input.GetMouseButtonDown(0)) {
             var pos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            if(gameType == GameType.Basic) {
-                pos.y = startHeightObj.transform.position.y;
-                pos.z = 0;
-                CreateBall(pos, nextBallTier);
-                nextBallTier = GetRandomTier();
-            }else if(gameType == GameType.SlingShot) {
-                pos.z = 0;
-                var newBall = CreateBall(pos, nextBallTier);
-                SetRandomForce(newBall);
-                nextBallTier = GetRandomTier();
-            }
+            pos.y = startHeightObj.transform.position.y;
+            pos.z = 0;
+
+            GenerateBall(pos);
+        }else if (Input.GetMouseButton(1)) {
+            var pos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            pos.z = 0;
+            GenerateBall(pos);
+        }
+    }
+    
+    private void GenerateBall(Vector3 pos) {
+
+        if(gameType == GameType.Basic) {
+            CreateBall(pos, nextBallTier);
+            nextBallTier = GetRandomTier();
+        }else if(gameType == GameType.SlingShot) {
+            pos.z = 0;
+            var newBall = CreateBall(pos, nextBallTier);
+            SetRandomForce(newBall);
+            nextBallTier = GetRandomTier();
         }
     }
     
@@ -90,7 +101,7 @@ public class BallGameMain : MonoBehaviour {
         
     }*/
     public void MergeBall(BallObject ball1, BallObject ball2) {
-        if(ball1.tier >= BallObject.MAX_LEVEL) {
+        if(ball1.tier >= MAX_LEVEL-1) {
             return;
         }
         var mergedTier = ball1.tier + 1;

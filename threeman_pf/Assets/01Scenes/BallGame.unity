@@ -343,6 +343,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f2940dfaf249db4593300fcc6baac27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ballPrefabs:
+  - {fileID: 400376699738453661, guid: b7f807e96e662634999270d4e3c3ef00, type: 3}
+  - {fileID: 2428087314763831429, guid: a93281a9b8605d647a2676b9ddf48f47, type: 3}
+  - {fileID: 7255710523736384112, guid: e94678761ee52e24487c18427efe44ae, type: 3}
+  - {fileID: 4873540517785074550, guid: 3bec9739616db4f428feb94bc481fffc, type: 3}
+  - {fileID: 4004319310313396336, guid: aeeba26bf23e28f44963bc51ecb9d809, type: 3}
+  - {fileID: 7350683239587651037, guid: 1e656572b4c6bd5438061df8596ba715, type: 3}
+  - {fileID: 5190879166039230055, guid: c846287a391eebc4096de34bd13503f7, type: 3}
+  - {fileID: 7794092019150537998, guid: 178897a26cee2b142a088dd115742eb6, type: 3}
+  - {fileID: 9204344146408027341, guid: 2964b89d6163b504c9a4caa31adead28, type: 3}
   tierProbability:
   - 0.5
   - 0.3
@@ -354,7 +364,7 @@ MonoBehaviour:
   - 0.002
   - 0.001
   - 0.001
-  ballPrefab: {fileID: 3558476902608757279, guid: 7aa36a74603e6f54ca68a58bd59bd122, type: 3}
+  gameType: 0
   ballParent: {fileID: 1611570808}
   startHeightObj: {fileID: 668727773}
   mainCamera: {fileID: 1086817318}
@@ -403,7 +413,7 @@ Transform:
   m_GameObject: {fileID: 668727773}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 4.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -470,7 +480,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 5.4
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
