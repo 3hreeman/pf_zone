@@ -5,7 +5,7 @@ public class SimpleFxObject : PoolingObject {
 
     public override void OnTakeObject(PoolingObject pObj) {
         var simpleFx = pObj as SimpleFxObject;
-        simpleFx.releaseAt = Time.time + 2;
+        simpleFx.releaseAt = Time.time + 1;
         base.OnTakeObject(pObj);
     }
 
