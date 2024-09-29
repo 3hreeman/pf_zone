@@ -21,7 +21,7 @@ public class PoolingObject : MonoBehaviour {
     }
 
     public virtual void OnDestroyObject(PoolingObject pObj) {
-        Destroy(pObj);
+        Destroy(pObj.gameObject);
     }
 
     public virtual void ReleaseObject() {
