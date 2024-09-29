@@ -7,6 +7,7 @@ public class ShotObject : PoolingObject {
     private Vector3 dir;
     private float moveSpd = 10;
     
+    private UnitBase owner;
     private static GameObject playerObj;
     private float lifeTime;
 
@@ -29,6 +30,7 @@ public class ShotObject : PoolingObject {
         shotDmg = Mathf.FloorToInt(chargingPower);
         curLife = shotLife = shotDmg;
         transform.localScale = Vector3.one * shotLife;
+        owner = unit;
         ownerType = unit.unitType;
         isAlive = true;
     }
@@ -58,6 +60,9 @@ public class ShotObject : PoolingObject {
                 if (col.gameObject.CompareTag("EnemyUnit")) {
                     var enemy = col.gameObject.GetComponent<EnemyUnit>();
                     enemy.TakeDmg(shotDmg);
+                    var hitFx = ObjectPoolManager.instance.Get<SimpleHitFxObject>("fx_hit");
+                    hitFx.transform.position = transform.position;
+                    hitFx.SetDirection(owner.transform.position - transform.position);
                     curLife--;
                 }
             }

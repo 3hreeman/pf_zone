@@ -48,6 +48,18 @@ public class ObjectPoolManager : MonoBehaviour {
         return poolObj;
     }
     
+    public T Get<T>(string key) where T : PoolingObject {
+        curKey = key;
+        
+        if (instance.poolDict.TryGetValue(curKey, out var resultPool)) {
+            var result = resultPool.Get() as T;
+            return result;
+        }
+
+        Debug.LogWarningFormat("ObjectPoolManager::Get {0} is not registered key", curKey);
+        return null;
+    }
+    
     public PoolingObject Get(string key) {
         curKey = key;
         
