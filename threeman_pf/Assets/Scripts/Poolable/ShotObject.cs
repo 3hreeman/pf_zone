@@ -22,11 +22,12 @@ public class ShotObject : PoolingObject {
         sprRenderer.sprite = spr;
     }
     
-    public void ShotStart(UnitBase unit, Vector3 start, Vector3 end, float chargingPower) {
+    public void ShotStart(UnitBase unit, Vector3 start, Vector3 end, float shotSpeed, float chargingPower) {
         transform.position = start;
         dir = (end - start).normalized;
         dir.z = 0;
         lifeTime = 0;
+        moveSpd = shotSpeed;
         shotDmg = Mathf.FloorToInt(chargingPower);
         curLife = shotLife = shotDmg;
         transform.localScale = Vector3.one * shotLife;

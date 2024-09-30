@@ -1,11 +1,16 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class WeaponObject : MonoBehaviour {
-    [SerializeField] private Transform aimObject;
-    [SerializeField] private Sprite shotSpr;
-    private bool isInit = false;
-    private UnitBase unitObj;
+    [SerializeField] protected Transform aimObject;
+    [SerializeField] protected Sprite shotSpr;
+    protected bool isInit = false;
+    protected UnitBase unitObj;
     public Vector2 aimPos;
+    public Transform fireStartTransform;
+    
+    public float baseFireRate = 0.25f;
+    public float baseShotSpeed = 10f;
     
     public void Init(UnitBase player) {
         unitObj = player;
@@ -28,6 +33,6 @@ public class WeaponObject : MonoBehaviour {
     public virtual void DoFire(UnitBase unit, Vector3 end, float chargingPower = 1f) {
         var shot = ObjectPoolManager.instance.Get("shot_object") as ShotObject;
         shot.SetShotSprite(shotSpr);
-        shot.ShotStart(unit, aimPos, end, chargingPower);
+        shot.ShotStart(unit, fireStartTransform.position, end, baseShotSpeed, chargingPower);
     }
 }
