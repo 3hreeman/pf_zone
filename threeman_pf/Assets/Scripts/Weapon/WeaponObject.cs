@@ -12,8 +12,12 @@ public class WeaponObject : MonoBehaviour {
         isInit = true;
     }
 
-    public void UpdateWeapon() {
+    public virtual void UpdateWeapon() {
         if(isInit == false) return;
+        RotateWeapon();
+    }
+
+    public virtual void RotateWeapon() {
         aimPos = unitObj.aimVector;
         var playerPos = unitObj.transform.position;
         aimPos.x += playerPos.x;
@@ -21,7 +25,7 @@ public class WeaponObject : MonoBehaviour {
         aimObject.position = aimPos;
     }
     
-    public void DoFire(UnitBase unit, Vector3 end, float chargingPower = 1f) {
+    public virtual void DoFire(UnitBase unit, Vector3 end, float chargingPower = 1f) {
         var shot = ObjectPoolManager.instance.Get("shot_object") as ShotObject;
         shot.SetShotSprite(shotSpr);
         shot.ShotStart(unit, aimPos, end, chargingPower);

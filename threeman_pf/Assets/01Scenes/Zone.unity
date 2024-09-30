@@ -155,9 +155,9 @@ MonoBehaviour:
   enemyPrefab: {fileID: -7475262937546951400, guid: e0e39132689fbbc41986c031ec6c0f71, type: 3}
   enemyUpdater: {fileID: 182713908}
   enemyList: []
-  testType: 0
-  useEnemyGen: 0
-  InitCount: 100
+  testType: 2
+  useEnemyGen: 1
+  InitCount: 1000
 --- !u!4 &182713907
 Transform:
   m_ObjectHideFlags: 0
@@ -187,7 +187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   main: {fileID: 182713906}
-  enemyMoveSpd: 1
+  enemyMoveSpd: 2
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

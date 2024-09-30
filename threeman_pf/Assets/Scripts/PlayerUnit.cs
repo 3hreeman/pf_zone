@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerUnit : UnitBase {
     private const float MOVE_SPD = 5f;
@@ -10,6 +11,8 @@ public class PlayerUnit : UnitBase {
     private float m_leftDashTime = 0;
     private float m_nextDashTime = 0;
 
+    [SerializeField] private List<WeaponObject> weaponList;
+    
     [SerializeField] private WeaponObject weapon;
     [SerializeField] private CharacterView charView;
 
