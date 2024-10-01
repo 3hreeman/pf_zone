@@ -5,7 +5,6 @@ public class PlayerUnit : UnitBase {
     private const float MOVE_SPD = 5f;
     private const float DASH_TIME = 0.5f;
     private const float DASH_COOLTIME = 1f;
-    private const float FIRE_COOLTIME = 0.25f;
     [Range(1f, 10f)] public float AtkSpdRatio = 1f;
     [Range(1f, 10f)] public float AtkPowerRatio = 1f;
     private float m_leftDashTime = 0;
@@ -73,7 +72,7 @@ public class PlayerUnit : UnitBase {
         } 
         if (nextAttackTime > Time.time) return;
         
-        nextAttackTime = Time.time + (FIRE_COOLTIME / AtkSpdRatio);
+        nextAttackTime = Time.time + (weapon.baseCooltime / AtkSpdRatio);
         weapon.DoFire(this, end, AtkPowerRatio);
     }
 

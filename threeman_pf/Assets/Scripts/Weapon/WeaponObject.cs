@@ -9,7 +9,7 @@ public class WeaponObject : MonoBehaviour {
     public Vector2 aimPos;
     public Transform fireStartTransform;
     
-    public float baseFireRate = 0.25f;
+    public float baseCooltime = 0.25f;
     public float baseShotSpeed = 10f;
     
     public void Init(UnitBase player) {
@@ -20,6 +20,10 @@ public class WeaponObject : MonoBehaviour {
     public virtual void UpdateWeapon() {
         if(isInit == false) return;
         RotateWeapon();
+    }
+
+    public virtual float GetFireCooltime() {
+        return baseCooltime;
     }
 
     public virtual void RotateWeapon() {
