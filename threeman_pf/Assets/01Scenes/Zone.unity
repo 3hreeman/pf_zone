@@ -1182,6 +1182,18 @@ PrefabInstance:
       propertyPath: weapon
       value: 
       objectReference: {fileID: 177570725}
+    - target: {fileID: 6456971077175652079, guid: 554f2b0a944705945a502084631a9db5, type: 3}
+      propertyPath: weaponList.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6456971077175652079, guid: 554f2b0a944705945a502084631a9db5, type: 3}
+      propertyPath: 'weaponList.Array.data[0]'
+      value: 
+      objectReference: {fileID: 6456971076047617333}
+    - target: {fileID: 6456971077175652079, guid: 554f2b0a944705945a502084631a9db5, type: 3}
+      propertyPath: 'weaponList.Array.data[1]'
+      value: 
+      objectReference: {fileID: 177570725}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
@@ -1190,6 +1202,17 @@ PrefabInstance:
       addedObject: {fileID: 177570726}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 554f2b0a944705945a502084631a9db5, type: 3}
+--- !u!114 &6456971076047617333 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2959880498537038507, guid: 554f2b0a944705945a502084631a9db5, type: 3}
+  m_PrefabInstance: {fileID: 6456971076047617332}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0872aad490f31449be90456ab0b1fbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

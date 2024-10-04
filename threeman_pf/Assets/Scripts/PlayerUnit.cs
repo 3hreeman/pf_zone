@@ -12,21 +12,38 @@ public class PlayerUnit : UnitBase {
 
     [SerializeField] private List<WeaponObject> weaponList;
     
-    [SerializeField] private WeaponObject weapon;
+    [SerializeField] private WeaponObject currentWeapon;
     [SerializeField] private CharacterView charView;
 
     private bool isCharging = false;
     private float chargingPower = 1;
     private float maxChargingPower = 5f;
     private void Start() {
-        weapon.Init(this);
+        InitWeapon();
+        ChangeWeapon(0);
+        currentWeapon.Init(this);
         curHp = maxHp;
         isAlive = true;
     }
 
+    private void InitWeapon() {
+        foreach(var weapon in weaponList) {
+            weapon.Init(this);
+        }
+    }
+
     public void Update() {
         DoMove();
-        weapon.UpdateWeapon();
+        currentWeapon.UpdateWeapon();
+    }
+    
+    public void ChangeWeapon(int idx) {
+        if (idx < 0 || idx >= weaponList.Count) return;
+        if(currentWeapon != null) {
+            currentWeapon.gameObject.SetActive(false);
+        }
+        currentWeapon = weaponList[idx];
+        currentWeapon.gameObject.SetActive(true);
     }
 
     private bool CheckDashAvailable() {
@@ -66,14 +83,14 @@ public class PlayerUnit : UnitBase {
     
     public override void DoAttack(Vector3 end) {
         if (isCharging) {
-            weapon.DoFire(this, end, chargingPower * 3f * AtkPowerRatio);
+            currentWeapon.DoFire(this, end, chargingPower * 3f * AtkPowerRatio);
             SetCharging(false);
             return;
         } 
         if (nextAttackTime > Time.time) return;
         
-        nextAttackTime = Time.time + (weapon.baseCooltime / AtkSpdRatio);
-        weapon.DoFire(this, end, AtkPowerRatio);
+        nextAttackTime = Time.time + (currentWeapon.GetFireCooltime() / AtkSpdRatio);
+        currentWeapon.DoFire(this, end, AtkPowerRatio);
     }
 
     protected override void DoMove() {
