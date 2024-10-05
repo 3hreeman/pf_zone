@@ -172,6 +172,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6518670339329504906, guid: d91edc5ab36b4ad488d4c6d02520d94b, type: 3}
+      propertyPath: baseCooltime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6518670339329504906, guid: d91edc5ab36b4ad488d4c6d02520d94b, type: 3}
       propertyPath: baseShotSpeed
       value: 25
       objectReference: {fileID: 0}
@@ -1349,13 +1353,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &8419702736657993136 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5905622591505588468, guid: 071212fadff623d43bb9b917a4c0a94a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7359399383979326946, guid: 071212fadff623d43bb9b917a4c0a94a, type: 3}
   m_PrefabInstance: {fileID: 8419702736657993134}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0872aad490f31449be90456ab0b1fbf, type: 3}
+  m_Script: {fileID: 11500000, guid: a5d6532b46a805b4ebc30c08187ecb0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
