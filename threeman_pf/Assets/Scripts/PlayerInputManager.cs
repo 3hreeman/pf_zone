@@ -40,5 +40,9 @@ public class PlayerInputManager : MonoBehaviour {
             mousePos.z = 0;
             m_player.DoAttack(mousePos);
         }
+        
+        if(Input.GetKeyDown(KeyCode.Tab)) {
+            m_player.ChangeNextWeapon();
+        }
     }
 }

@@ -14,9 +14,9 @@ public class WeaponObject : MonoBehaviour {
     public Vector2 aimPos;
     public Transform fireStartTransform;
     
-    protected float baseCooltime = 0.25f;
-    protected float baseShotSpeed = 10f;
-    
+    [Range(0.1f, 1f)] public float baseCooltime = 0.25f;
+    [Range(1f, 100f)] public float baseShotSpeed = 10f;
+    public float baseDamage = 1f;
     public List<ParticleSystem> fireFxList = new List<ParticleSystem>();
     
     public void Init(UnitBase player) {
@@ -45,9 +45,15 @@ public class WeaponObject : MonoBehaviour {
         var shot = ObjectPoolManager.instance.Get("shot_object") as ShotObject;
         shot.SetShotSprite(shotSpr);
         shot.ShotStart(unit, fireStartTransform.position, end, baseShotSpeed, chargingPower);
-        audioSource.PlayOneShot(fireSound);
+        PlayFireFx();
+    }
+    
+    public virtual void PlayFireFx() {
         foreach (var fx in fireFxList) {
             fx.Play();
+        }
+        if(fireSound != null) {
+            audioSource.PlayOneShot(fireSound);
         }
     }
 }

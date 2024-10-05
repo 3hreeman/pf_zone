@@ -37,6 +37,15 @@ public class PlayerUnit : UnitBase {
         currentWeapon.UpdateWeapon();
     }
     
+    public void ChangeNextWeapon() {
+        var idx = weaponList.IndexOf(currentWeapon);
+        idx++;
+        if (idx >= weaponList.Count) {
+            idx = 0;
+        }
+        ChangeWeapon(idx);
+    }
+    
     public void ChangeWeapon(int idx) {
         if (idx < 0 || idx >= weaponList.Count) return;
         if(currentWeapon != null) {
