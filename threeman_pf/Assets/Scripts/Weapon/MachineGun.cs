@@ -13,7 +13,7 @@ public class MachineGun : WeaponObject {
     public override void DoFire(UnitBase unit, Vector3 end, float chargingPower = 1f) {
         var shot = ObjectPoolManager.instance.Get("shot_object") as ShotObject;
         shot.SetShotSprite(shotSpr);
-        shot.ShotStart(unit, fireStartTransform.position, end, baseShotSpeed, chargingPower);
+        shot.ShotStart(unit, fireStartTransform.position, end, baseShotSpeed, baseDamage, chargingPower);
         PlayFireFx();
     }
 }

@@ -14,7 +14,7 @@ public class WeaponObject : MonoBehaviour {
     public Vector2 aimPos;
     public Transform fireStartTransform;
     
-    [Range(0.1f, 1f)] public float baseCooltime = 0.25f;
+    [Range(0.1f, 5f)] public float baseCooltime = 0.25f;
     [Range(1f, 100f)] public float baseShotSpeed = 10f;
     public float baseDamage = 1f;
     public List<ParticleSystem> fireFxList = new List<ParticleSystem>();
@@ -44,7 +44,7 @@ public class WeaponObject : MonoBehaviour {
     public virtual void DoFire(UnitBase unit, Vector3 end, float chargingPower = 1f) {
         var shot = ObjectPoolManager.instance.Get("shot_object") as ShotObject;
         shot.SetShotSprite(shotSpr);
-        shot.ShotStart(unit, fireStartTransform.position, end, baseShotSpeed, chargingPower);
+        shot.ShotStart(unit, fireStartTransform.position, end, baseShotSpeed, baseDamage, chargingPower);
         PlayFireFx();
     }
     

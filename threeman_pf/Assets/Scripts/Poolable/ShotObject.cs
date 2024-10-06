@@ -12,6 +12,8 @@ public class ShotObject : PoolingObject {
     private float lifeTime;
 
     private bool isAlive = false;
+    private float baseDmg = 0;
+    private float chargingPower = 0;
     private int shotDmg = 0;
     private int shotLife = 0;
     private int curLife = 0;
@@ -22,15 +24,17 @@ public class ShotObject : PoolingObject {
         sprRenderer.sprite = spr;
     }
     
-    public void ShotStart(UnitBase unit, Vector3 start, Vector3 end, float shotSpeed, float chargingPower) {
+    public void ShotStart(UnitBase unit, Vector3 start, Vector3 end, float shotSpeed, float baseDmg, float chargingPower) {
         transform.position = start;
         dir = (end - start).normalized;
         dir.z = 0;
         lifeTime = 0;
         moveSpd = shotSpeed;
-        shotDmg = Mathf.FloorToInt(chargingPower);
-        curLife = shotLife = shotDmg;
-        transform.localScale = Vector3.one * shotLife;
+        this.baseDmg = baseDmg;
+        this.chargingPower = chargingPower;
+        shotDmg = Mathf.FloorToInt(baseDmg * chargingPower);
+        curLife = shotLife = Mathf.FloorToInt(chargingPower);
+        transform.localScale = Vector3.one * chargingPower;
         owner = unit;
         ownerType = unit.unitType;
         isAlive = true;
