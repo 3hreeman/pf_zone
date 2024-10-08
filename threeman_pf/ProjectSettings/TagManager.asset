@@ -8,6 +8,7 @@ TagManager:
   - EnemyUnit
   - TileObject
   - BallObject
+  - Obstacle
   layers:
   - Default
   - TransparentFX
