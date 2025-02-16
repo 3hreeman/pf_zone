@@ -37,7 +37,7 @@ public class GameMain : MonoBehaviour {
     private void Start() {
         instance = this;
         enemyUpdater.Init(this);
-        enemyPool = new ObjectPool<EnemyUnit>(CreateEnemy, OnGetEnemy, OnReleaseEnemy, OnDestroyEnemy, maxSize: 20);
+        enemyPool = new ObjectPool<EnemyUnit>(CreateEnemy, OnGetEnemy, OnReleaseEnemy, OnDestroyEnemy, maxSize: 2000);
         enemyGenTime = 5;
         for (int i = 0; i < InitCount; i++) {
             GenerateEnemy();
@@ -78,6 +78,12 @@ public class GameMain : MonoBehaviour {
             cts.Cancel();
         }
 
+        if(Input.GetKeyDown(KeyCode.Alpha1)) {
+            testType = TestType.UseMain;
+        }
+        else if(Input.GetKeyDown(KeyCode.Alpha2)) {
+            testType = TestType.UseJob;
+        }
         
         if (testType == TestType.UseJob) {
             TestJob();

@@ -30,7 +30,7 @@ public class ShotObject : PoolingObject {
         dir = (end - start).normalized;
         dir.z = 0;
         lifeTime = 0;
-        moveSpd = shotSpeed;
+        moveSpd = shotSpeed / chargingPower;
         this.baseDmg = baseDmg;
         this.chargingPower = chargingPower;
         shotDmg = Mathf.FloorToInt(baseDmg * chargingPower);

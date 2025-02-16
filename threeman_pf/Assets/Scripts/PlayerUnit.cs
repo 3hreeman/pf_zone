@@ -14,10 +14,12 @@ public class PlayerUnit : UnitBase {
     
     [SerializeField] private WeaponObject currentWeapon;
     [SerializeField] private CharacterView charView;
-
+    [SerializeField] private ParticleSystem chargingFx;
+    
     private bool isCharging = false;
     private float chargingPower = 1;
     private float maxChargingPower = 5f;
+    
     private void Start() {
         InitWeapon();
         ChangeWeapon(0);
@@ -68,7 +70,9 @@ public class PlayerUnit : UnitBase {
     }
 
     public void SetCharging(bool flag) {
+        if(isCharging == flag) return;
         isCharging = flag;
+        chargingFx.gameObject.SetActive(flag);
         chargingPower = 1f;
     }
 
